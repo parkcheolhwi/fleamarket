@@ -1,0 +1,15 @@
+/* 会員登録 */
+table tr th{
+	text-align : right;
+	width : 30%;
+}
+
+.div-right{
+	text-align : right;
+}
+
+
+/* ログイン */
+.login-form{
+	padding : 0 5% 0 5%;
+}
