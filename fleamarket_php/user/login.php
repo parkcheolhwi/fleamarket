@@ -61,15 +61,14 @@ if(isset($_POST['login'])){
     
     if (mysqli_num_rows($result) != 1) {
         $errorMsg = "ログイン情報がありません。";
-        header("Location: ../index.php?errorMsg={$errorMsg}");
+        header("Location: ./login.php?errorMsg={$errorMsg}");
         exit;
     } 
     $data = mysqli_fetch_assoc($result);
-    mysqli_free_result($result);
-    mysqli_close($conn);
+    
     if($data['user_mailcheck'] != 'Y'){
         $errorMsg = "メール認証をしてください。";
-        header("Location: ../index.php?errorMsg={$errorMsg}");
+        header("Location: ./login.php?errorMsg={$errorMsg}");
         exit;
         
     } 
@@ -85,7 +84,8 @@ if(isset($_POST['login'])){
     }
     header("Location: ../index.php");
     exit;
-   
+    mysqli_free_result($result);
+    mysqli_close($conn);
     
     
 }
@@ -101,36 +101,8 @@ if(isset($_POST['login'])){
 <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 </head>
 <body>
-	<?php 
-	if(isset($_GET['successMsg'])){
-	    echo "<script>alert('{$_GET['successMsg']}')</script>";
-	}
-	if(isset($_GET['errorMsg'])){
-	    echo "<script>alert('{$_GET['errorMsg']}')</script>";
-	}
-	?>
-	<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
-		<a class="navbar-brand" href="../index.php">Navbar</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav mr-auto">
-				<li class="nav-item active"><a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a></li>
-				<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-				<li class="nav-item"><a class="nav-link disabled" href="#">Disabled</a></li>
-			</ul>
-			<form class="form-inline my-2 my-lg-0">
-				<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-			</form>
-			
-			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link" href="./signup.php">Sign up</a></li>
-			</ul>
-		</div>
-	</nav>
+	<?php require_once '../menu/menunav.php';?>
+	
 	<div class="row">
     	<div class="col-lg-4"></div>	
     		
@@ -150,6 +122,14 @@ if(isset($_POST['login'])){
     			<div class="form-group">
     				<button type="submit" name="login" class="btn btn-primary form-control">ログイン</button>
     			</div>
+    			
+    			<div class="form-inline">
+        			<button type="button" class="btn btn-light form-control col-sm-6" data-toggle="modal" data-target="#findUserId">ID探す</button>
+        			<button type="button" class="btn btn-light form-control col-sm-6" data-toggle="modal" data-target="#findUserPassword">PASSWORD探す</button>
+    			</div>
+    			
+    			
+    			<!-- Google, FaceBook, ログイン -->
 				<div class="btn-group form-group">
 					<a class='btn btn-default disabled'><i class="fa fa-google-plus" style="width:16px; height:20px"></i></a>
 					<a class='btn btn-default' href='' style="width:12em;"> Sign in with Google</a>
@@ -167,7 +147,64 @@ if(isset($_POST['login'])){
     	<div class="col-lg-5"></div>
 	</div>
 	
+	<!--ID探すMODAL -->
+	<div class="modal" id="findUserId">
+		<div class="modal-dialog">
+			<div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">ID探す</h4>
+                    <button type="button" class="close passwordUpdateModalClose" data-dismiss="modal">&times;</button>
+                </div>
+                
+                <!-- Modal body -->
+                <div class="modal-body">	
+                	<p class="text-info">登録したE-メールを入力してください。</p>
+               		<div class="form-inline" style="margin-bottom: 10px;">
+               			E-メール：&nbsp;<input type="email" id="findIdEmail" name="findIdEmail" class="form-control col-sm-9">
+               		</div>
+               	    <span id="findUserIdResult" class="text-primary"></span>
+                </div>
+    
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                	<button type="button" class="btn btn-primary" onclick="findUserIdAjax()">探す</button>
+               		<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+			</div>
+		</div>
+	</div>
 	
+	<!--パスワード探すMODAL -->
+	<div class="modal" id="findUserPassword">
+		<div class="modal-dialog">
+			<div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">パスワード探す</h4>
+                    <button type="button" class="close passwordUpdateModalClose" data-dismiss="modal">&times;</button>
+                </div>
+                
+                <!-- Modal body -->
+                <div class="modal-body">
+                	<p class="text-info">登録したIDとE-メールを入力してください。</p>
+               		<div class="form-inline" style="margin-bottom: 10px;">
+               			ID：&nbsp;<input type="text" id="findPasswordId" name="findPasswordId" class="form-control col-sm-10">
+               		</div>
+               		<div class="form-inline" style="margin-bottom: 10px;">
+               			E-メール：&nbsp;<input type="email" id="findPasswordEmail" name="findPasswordEmail" class="form-control col-sm-9">
+               		</div>
+               		<span id="findUserPasswordResult" class="text-primary"></span>
+                </div>
+    
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                	<button type="submit" class="btn btn-primary" onclick="findUserPasswordAjax()">探す</button>
+               		<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+			</div>
+		</div>
+	</div>
 	
 
 <!-- jQuery library -->

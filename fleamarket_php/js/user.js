@@ -54,7 +54,6 @@ function emptyCheck() {
 		alert('ID, Emailをチェックしてください。');
 		return false;
 	}
-
 	
 }
 
@@ -232,3 +231,181 @@ function loginCheck(){
 		return false;
 	}
 }
+
+
+/*--------------------------------------パスワード変更-------------------------------------*/
+
+
+function updatePasswordCheck(){
+	
+	if($('#oldPassword').val() == ''){
+		alert('旧パスワードを入力してください。');
+		$('#oldPassword').focus();
+		return false;
+	}
+	if($('#newPassword1').val() == ''){
+		alert('新パスワードを入力してください。');
+		$('#newPassword1').focus();
+		return false;
+	}
+	if($('#newPassword2').val() == ''){
+		alert('新パスワード（確認）を入力してください。');
+		$('#newPassword2').focus();
+		return false;
+	}
+	if($('#newPassword1').val() != $('#newPassword2').val()){
+		alert('新パスワードが一致しません。');
+		$('#newPassword1').val('');
+		$('#newPassword2').val('');
+		$('#passwordCheckResult').val('');
+		$('#newPassword1').focus();
+		return false;
+	}
+    
+}
+
+$('#newPassword2').keyup(function(){
+	if($('#newPassword1').val() == $('#newPassword2').val()){
+		$('#passwordCheckResult').html('パスワードが一致します。');
+		$('#passwordCheckResult').css('color', 'blue');
+	} else{
+		$('#passwordCheckResult').html('パスワードが一致しません。');
+		$('#passwordCheckResult').css('color', 'red');
+	}
+})
+
+$('.passwordUpdateModalClose').on('click', function(){
+	$('#oldPassword').val('');
+	$('#newPassword1').val('');
+	$('#newPassword2').val('');
+	$('#passwordCheckResult').val('');
+})
+
+/* ---------------------------------詳細情報更新---------------------------------------- */
+
+function isDetailUserUpdate(){
+	var userNo = $('#userNo').val();
+	var userPhoneNumber = $('#userPhoneNumber').val();
+	var userEmail = $('#userEmail').val();
+	var userZipCode = $('#userZipCode').val();
+	var userAddress1 = $('#userAddress1').val();
+	var userAddress2 = $('#userAddress2').val();
+	
+	if(userPhoneNumber == ''){
+		alert('電話番号を入力してください。');
+		$('#userPhoneNumber').focus();
+		return false;
+	}
+	if(userEmail == ''){
+		alert('E-メールを入力してください。');
+		$('#userEmail').focus();
+		return false;
+	}
+	if(userZipCode == ''){
+		alert('郵便番号を入力してください。');
+		$('#userZipCode').focus();
+		return false;
+	}
+	if(userAddress1 == ''){
+		alsert('住所を入力してください。');
+		$('#userAddress1').focus();
+		return false;
+	}
+	
+	
+	$.ajax({
+		type : "POST",
+		url : "./detailUserUpdate.php",
+		data : {
+			userNo : userNo,
+			userPhoneNumber : userPhoneNumber,
+			userEmail : userEmail,
+			userZipCode : userZipCode,
+			userAddress1 : userAddress1,
+			userAddress2 : userAddress2
+		},
+		success : function(result){
+			if(result){
+				alert('会員情報を変更しました。');
+				location.href="./detailUser.php";
+			}else{
+				alert('会員情報を変更できませんでした。');
+			}
+		}
+	});
+}
+
+/* ---------------------------------会員脱退---------------------------------------- */
+
+function deleteUser(){
+	if($('#userPassword').val() == ''){
+		alert('パスワードを入力してください。');
+		$('#userPassword').focus();
+		return false;
+	}
+	
+	
+}
+
+/*-------------------------------------ID探す---------------------------------------------------- */
+function findUserIdAjax(){
+	var userEmail = $('#findIdEmail').val();
+	
+	if(userEmail == ''){
+		alert('E-メールを入力してください。');
+		$('#findIdEmail').focus();
+		return false;
+	}
+	
+	
+	$.ajax({
+		type : "POST",
+		url : "./findUserIdAjax.php",
+		data : {userEmail : userEmail},
+		success : function(result){
+			if(result != ''){
+				$('#findUserIdResult').html("IDは："+result+"です。");
+			}else{
+				$('#findUserIdResult').html("E-メールと一致するデータはありません。");
+			}
+			
+		}
+	});
+	
+}
+
+/*-------------------------------------PASSWORD探す---------------------------------------------------- */
+
+function findUserPasswordAjax(){
+	var userId = $('#findPasswordId').val();
+	var userEmail = $('#findPasswordEmail').val();
+	
+	if(userId == ''){
+		alert('IDを入力してください。');
+		$('#findPasswordId').focus();
+		return false;
+	}
+	if(userEmail == ''){
+		alert('E-メールを入力してください。');
+		$('#findPasswordEmail').focus();
+		return false;
+	}
+	
+	$.ajax({
+		type : "POST",
+		url : "./findUserPasswordAjax.php",
+		data : {
+			userId : userId,
+			userEmail : userEmail
+		},
+		success : function(result){
+			if(result != ''){
+				$('#findUserPasswordResult').html("PASSWORDは："+result+"です。");
+			}else{
+				$('#findUserPasswordResult').html("データと一致するデータはありません。");
+			}
+		}
+	});
+}
+
+

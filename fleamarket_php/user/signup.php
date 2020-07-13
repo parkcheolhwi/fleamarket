@@ -29,7 +29,9 @@ if(isset($_POST['insertUser'])){
         'userBirthDay' => mysqli_real_escape_string($conn, $_POST['year']."-".$_POST['month']."-".$_POST['day']),
         'userPhoneNumber' => mysqli_real_escape_string($conn, $_POST['userPhoneNumber']),
         'userEmail' => mysqli_real_escape_string($conn, $_POST['userEmail']),
-        'userAddress' => mysqli_real_escape_string($conn, "({$_POST['userZipCode']}) {$_POST['userAddress1']} {$_POST['userAddress2']}"),
+        'userZipcode' => mysqli_real_escape_string($conn, $_POST['userZipCode']),
+        'userAddress1' => mysqli_real_escape_string($conn, $_POST['userAddress1']),
+        'userAddress2' => mysqli_real_escape_string($conn, $_POST['userAddress2']),
         'userMailCheck' => mt_rand(100000, 999999)
     );
     
@@ -62,7 +64,9 @@ if(isset($_POST['insertUser'])){
         user_birth,    
         user_phone, 
         user_email, 
-        user_address, 
+        user_zipcode,
+        user_address1,
+        user_address2, 
         user_createdate,
         user_mailcheck
         ) 
@@ -75,7 +79,9 @@ if(isset($_POST['insertUser'])){
         '{$singupData['userBirthDay']}',
         '{$singupData['userPhoneNumber']}',
         '{$singupData['userEmail']}',
-        '{$singupData['userAddress']}',
+        '{$singupData['userZipcode']}',
+        '{$singupData['userAddress1']}',
+        '{$singupData['userAddress2']}',
         NOW(),
         '{$singupData['userMailCheck']}'
         )";
@@ -108,8 +114,8 @@ if(isset($_POST['insertUser'])){
     $mail -> isSMTP();
     $mail -> Host= "smtp.gmail.com";
     $mail -> SMTPAuth = true;
-    $mail -> Username = "cjfgnl9205@gmail.com";
-    $mail -> Password = "srlsl8183**";
+    $mail -> Username = "parktest9999@gmail.com";
+    $mail -> Password = "srlsl8183";
     $mail -> Port = 465;
     $mail -> SMTPSecure = "ssl";
     
@@ -117,7 +123,7 @@ if(isset($_POST['insertUser'])){
     $mail ->CharSet = "UTF-8";
     $mail ->isHTML(true);
     $mail ->setFrom("{$singupData['userEmail']}", "{$singupData['userId']}");
-    $mail ->addAddress("cjfgnl9205@gmail.com"); #私のemail
+    $mail ->addAddress("parktest9999@gmail.com"); #私のemail
     $mail ->Subject = $mailTitle;
     $mail ->Body = $mailContent;
     
@@ -143,29 +149,7 @@ if(isset($_POST['insertUser'])){
 </head>
 <body>
 	
-	<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
-		<a class="navbar-brand" href="../index.php">Navbar</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav mr-auto">
-				<li class="nav-item active"><a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a></li>
-				<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-				<li class="nav-item"><a class="nav-link disabled" href="#">Disabled</a></li>
-			</ul>
-			<form class="form-inline my-2 my-lg-0">
-				<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-			</form>
-			
-			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link" href="./login.php">Sign in</a></li>
-				<li class="nav-item"><a class="nav-link" href="./signup.php">Sign up</a></li>
-			</ul>
-		</div>
-	</nav>
+	<?php require_once '../menu/menunav.php';?>
 	<div class="row">
     	<div class="col-lg-4"></div>	
     		
