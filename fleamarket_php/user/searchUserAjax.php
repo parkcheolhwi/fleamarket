@@ -1,4 +1,5 @@
-<?php 
+<?php
+/* 삭제해도댐 */
 $conn = mysqli_connect(
     'localhost',
     'root',
@@ -16,11 +17,20 @@ if(mysqli_connect_errno()){
     exit;
 }
 
+$searchData = array(
+  'searchUser' => mysqli_real_escape_string($conn, $_POST['userSearch'])  
+);
+
 $sql = "
         SELECT
             *
             FROM
                 userinfo
+            WHERE
+                user_id 
+                    LIKE '%{$searchData['searchUser']}%'
+                OR user_name
+                    LIKE '%{$searchData['searchUser']}%'
             ORDER BY
                 user_no
         ";
@@ -33,9 +43,19 @@ $return = array();
 if(mysqli_num_rows($result) > 0){
     while($data = mysqli_fetch_assoc($result)){
         $return[] = array(
-            'userNo'=> $data['user_no'], 
+            'userNo'=> $data['user_no'],
             'userId' => $data['user_id'],
             'userName' => $data['user_name'],
+            'userCreateDate' => $data['user_createdate'],
+            'userDeleteCheck' => $data['user_deletecheck'],
+            'userBirthDay' => $data['user_birth'],
+            'userPhoneNumber' => $data['user_phone'],
+            'userEmail' => $data['user_email'],
+            'userZipCode' => $data['user_zipcode'],
+            'userAddress1' => $data['user_address1'],
+            'userAddress2' => $data['user_address2'],
+            'userLikeCount' => $data['user_likecount'],
+            'userHateCount' => $data['user_hatecount'],
             'userCreateDate' => $data['user_createdate'],
             'userDeleteCheck' => $data['user_deletecheck']
         );

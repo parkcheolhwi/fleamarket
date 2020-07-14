@@ -4,20 +4,14 @@
 <head>
 <meta charset="UTF-8">
 <title>フリマシステム</title>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<!-- jQuery library -->
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!-- Popper JS -->
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<!-- Latest compiled JavaScript -->
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<!-- Bootstrap core CSS -->
+<link href="./btcss/bootstrap.min.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="./btcss/mdb.min.css" rel="stylesheet">
+<!-- Your custom styles (optional) -->
+<link href="./btcss/style.css" rel="stylesheet">
 
-
+<link rel="stylesheet" href="./css/user.css">
 </head>
 <body>
 
@@ -31,6 +25,9 @@
 		</div>
 	</div>
 
-	
+<script src="./btjs/jquery.min.js"></script>
+<script src="./btjs/popper.min.js"></script>
+<script src="./btjs/bootstrap.min.js"></script>
+<script src="./js/user.js"></script>	
 </body>
 </html>

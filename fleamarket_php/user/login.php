@@ -33,7 +33,7 @@ if(isset($_POST['login'])){
      */
     $sql = "
             SELECT 
-                user_mailcheck, user_authority , user_id
+               *
                 FROM 
                     userinfo
                 WHERE
@@ -96,7 +96,13 @@ if(isset($_POST['login'])){
 <meta charset="UTF-8">
 <title>ログイン | フリマシステム</title>
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<!-- Bootstrap core CSS -->
+<link href="../btcss/bootstrap.min.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="../btcss/mdb.min.css" rel="stylesheet">
+<!-- Your custom styles (optional) -->
+<link href="../btcss/style.css" rel="stylesheet">
+
 <link rel="stylesheet" href="../css/user.css">
 <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 </head>
@@ -107,40 +113,51 @@ if(isset($_POST['login'])){
     	<div class="col-lg-4"></div>	
     		
     	<div class="col-lg-4 login-form">
-    		<h3 style="text-align:center">ログイン</h3>
+    		<h3 style="text-align:center; margin-top:20px;">ログイン</h3>
     		<form  action="./login.php" method="post" onsubmit="return loginCheck();">
+    			<div class="md-form">
+                    <input  type="text" class="form-control" id="userId" name="userId" value="<?php if(isset($_COOKIE['userId'])) echo $_COOKIE['userId']?>">
+                    <label for="userId">IDを入力してください。</label>
+                </div>
+        		<div class="md-form">
+                    <input  type="password" class="form-control" id="userPassword" name="userPassword" value="<?php if(isset($_COOKIE['userPassword'])) echo $_COOKIE['userPassword']?>">
+                    <label for="userPassword">パスワードを入力してください。</label>
+                </div>
+
+				<div class="custom-control custom-checkbox custom-control-inline">
+             		   <input type="checkbox" class="custom-control-input" id="idSaveCheck" name="idSaveCheck" <?php if(isset($_COOKIE['userId'])) echo "checked"?>>
+                		<label class="custom-control-label" for="idSaveCheck">ID保存</label>
+                </div>
+                
+                
+                <div class="custom-control custom-checkbox custom-control-inline">
+               		 <input type="checkbox" class="custom-control-input" id="passwordSaveCheck" name="passwordSaveCheck" <?php if(isset($_COOKIE['userPassword'])) echo "checked"?>>
+                	<label class="custom-control-label" for="passwordSaveCheck">PASSWORD保存</label>
+                </div>
+                
     			<div class="form-group">
-    				<input type="text" class="form-control" id="userId" name="userId" placeholder="IDを入力してください。" value="<?php if(isset($_COOKIE['userId'])) echo $_COOKIE['userId']?>">
-    			</div>
-    			<div class="form-group">
-    				<input type="password" class="form-control" id="userPassword" name="userPassword" placeholder="パスワードを入力してください。" value="<?php if(isset($_COOKIE['userPassword'])) echo $_COOKIE['userPassword']?>">
-    			</div>
-    			<div>
-					<input type="checkbox"  name="idSaveCheck" <?php if(isset($_COOKIE['userId'])) echo "checked"?>>ID保存
-					<input type="checkbox"  name="passwordSaveCheck" <?php if(isset($_COOKIE['userPassword'])) echo "checked"?>>PASSWORD保存
-				</div>
-    			<div class="form-group">
-    				<button type="submit" name="login" class="btn btn-primary form-control">ログイン</button>
+    				<button type="submit" name="login" class="btn btn-outline-primary btn-rounded waves-effect btn-block">ログイン</button>
     			</div>
     			
     			<div class="form-inline">
-        			<button type="button" class="btn btn-light form-control col-sm-6" data-toggle="modal" data-target="#findUserId">ID探す</button>
-        			<button type="button" class="btn btn-light form-control col-sm-6" data-toggle="modal" data-target="#findUserPassword">PASSWORD探す</button>
+        			<button type="button" class="btn btn-outline-info btn-rounded waves-effect col-sm-6" data-toggle="modal" data-target="#findUserId" style="margin:0">ID探す</button>
+        			<button type="button" class="btn btn-outline-info btn-rounded waves-effect col-sm-6" data-toggle="modal" data-target="#findUserPassword" style="margin:0">PASSWORD探す</button>
     			</div>
     			
     			
     			<!-- Google, FaceBook, ログイン -->
-				<div class="btn-group form-group">
-					<a class='btn btn-default disabled'><i class="fa fa-google-plus" style="width:16px; height:20px"></i></a>
-					<a class='btn btn-default' href='' style="width:12em;"> Sign in with Google</a>
+
+				<div class="btn-group form-group" style="margin : 3px 0 0 0;">
+					<a class='btn btn-light disabled'><i class="fa fa-google-plus" style="width:16px; height:20px"></i></a>
+					<a class='btn btn-light' href='' style="width:27em;"> Sign in with Google</a>
 				</div>
-				<div class="btn-group form-group">
+				<div class="btn-group form-group" style="margin : 3px 0 0 0;">
 					<a class='btn btn-primary disabled'><i class="fa fa-facebook" style="width:16px; height:20px"></i></a>
-					<a class='btn btn-primary ' href='' style="width:12em"> Sign in with Facebook</a>
+					<a class='btn btn-primary ' href='' style="width:27em"> Sign in with Facebook</a>
 				</div>	
-				<div class="btn-group form-group">
+				<div class="btn-group form-group" style="margin : 3px 0 0 0;">
 					<a class='btn btn-info disabled'><i class="fa fa-twitter" style="width:16px; height:20px"></i></a>
-					<a class='btn btn-info ' href='' style="width:12em"> Sign in with Twitter</a>
+					<a class='btn btn-info ' href='' style="width:27em"> Sign in with Twitter</a>
 				</div>	
         	</form>	
     	</div>
@@ -206,14 +223,10 @@ if(isset($_POST['login'])){
 		</div>
 	</div>
 	
-
-<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!-- Popper JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-
+<script src="../btjs/jquery.min.js"></script>
+<script src="../btjs/popper.min.js"></script>
+<script src="../btjs/bootstrap.min.js"></script>
+<script src="../btjs/mdb.min.js"></script>
 <script src="../js/user.js"></script>​
 </body>
 </html>

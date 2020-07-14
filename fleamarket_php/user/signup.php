@@ -141,8 +141,13 @@ if(isset($_POST['insertUser'])){
 <meta charset="UTF-8">
 <title>会員登録 | フリマシステム</title>
 
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<!-- Bootstrap core CSS -->
+<link href="../btcss/bootstrap.min.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="../btcss/mdb.min.css" rel="stylesheet">
+<!-- Your custom styles (optional) -->
+<link href="../btcss/style.css" rel="stylesheet">
+
 <link rel="stylesheet" href="../css/user.css">
 
 
@@ -154,81 +159,68 @@ if(isset($_POST['insertUser'])){
     	<div class="col-lg-4"></div>	
     		
     	<div class="col-lg-4">
-    		<h3 style="text-align:center">会員登録</h3>
+    		<h3 style="text-align:center; margin-top:20px;">会員登録</h3>
     		<form class="form-group" action="./signup.php" method="post" onsubmit="return emptyCheck()">
-        		<table class="table table-borderless">
-        			<tr>
-        				<th>ID：</th>
-        				<td class="form-inline">
-        					<input class="form-control col-sm-8" type="text" id="userId" name="userId" placeholder="IDを入力してください。">&nbsp;
-        					<button type="button" class="btn btn-default" onclick="userIdCheck();">重複チェック</button>
-        				</td>
-        			</tr>
-        			<tr>	
-        				<th>パスワード：</th>
-        				<td><input class="form-control" type="password" id="userPassword" name="userPassword" placeholder="PassWordを入力してください。"></td>
-        			</tr>
-        			<tr>	
-        				<th>パスワード(確認)：</th>
-        				<td>
-        					<input class="form-control" type="password" id="userPasswordCheck" name="userPasswordCheck" placeholder="PassWordを入力してください。">
-        					<span id="passwordCheckResult"></span>
-        				</td>
-        			</tr>
-        			<tr>	
-        				<th>名前：</th>
-        				<td><input class="form-control" type="text" id="userName" name="userName" placeholder="名前を入力してください。"></td>
-        			</tr>
-        			<tr>	
-        				<th>生年月日：</th>
-        				<td class="form-inline">
-        					<select class="form-control" id="year" name="year">
-        						<option value="">年</option>        						
-        						<?php for($i = date('Y', time()); $i >= date('Y', time())-100; $i--){ ?>
-            					<option value="<?=$i ?>"><?=$i ?></option>
-        						<?php }	?>
-        					</select>&nbsp;年&nbsp;&nbsp;
-        					<select class="form-control" id="month" name="month">
-								<option value="">月</option>        						
-        						<?php for($i = 1; $i <= 12; $i++){ ?>
-            					<option value="<?=$i ?>"><?=$i ?></option>
-        						<?php }	?>
-        					</select>&nbsp;月&nbsp;&nbsp;
-        					<select class="form-control" id="day" name="day">
-        						<option value="">日</option>        						
-        						<?php for($i = 1; $i <= 31; $i++){ ?>
-            					<option value="<?=$i ?>"><?=$i ?></option>
-        						<?php }	?>
-        					</select>&nbsp;日&nbsp;&nbsp;
-        				</td>
-        			</tr>
-        			<tr>	
-        				<th>電話番号：</th>
-        				<td><input class="form-control" type="text" id="userPhoneNumber" name="userPhoneNumber" placeholder="電話番号を入力してください。" ></td>
-        			</tr>
-        			<tr>	
-        				<th>E-メール：</th>
-        				<td class="form-inline">
-        					<input class="form-control col-sm-8" type="email" id="userEmail" name="userEmail" placeholder="E-メールを入力してください。">&nbsp;
-        					<button type="button" class="btn btn-default" onclick="userEmailCheck();">重複チェック</button>
-        				</td>
-        			</tr>
-        			<tr>	
-        				<th>住所：</th>
-        				<td class="form-inline">
-        					<input class="form-control col-sm-4" type="text" id="userZipCode" name="userZipCode" placeholder="郵便番号">&nbsp;
-        					<button type="button" class="btn btn-default" onclick="searchZipCode();">検索</button>
-        				</td>
-        			</tr>
-        			<tr>
-        				<td></td>
-        				<td><input class="form-control" type="text" id="userAddress1" name="userAddress1" placeholder="都道府県"></td>
-        			</tr>
-        			<tr>
-        				<td></td>
-        				<td><input class="form-control" type="text" id="userAddress2" name="userAddress2" placeholder="詳細住所を入力してください。（選択）"></td>
-        			</tr>
-        		</table>
+				<div class="md-form form-sm form-inline" style="margin:0">
+					<input class="form-control form-control-sm col-sm-8" type="text" id="userId" name="userId" value="">&nbsp;
+					<label for="userId">IDを入力してください。</label>
+					<button type="button" class="btn btn-default" onclick="userIdCheck();">重複チェック</button>
+				</div>
+				<div class="md-form form-sm">
+					<input class="form-control form-control-sm" type="password" id="userPassword" name="userPassword" value="">
+					<label for="userPassword">PassWordを入力してください。</label>
+				</div>
+				<div class="md-form form-sm">
+					<input class="form-control form-control-sm" type="password" id="userPasswordCheck" name="userPasswordCheck" value="">
+					<label for="userPasswordCheck">PassWord(確認)を入力してください。</label>
+					<span id="passwordCheckResult"></span>
+				</div>
+				<div class="md-form form-sm">
+					<input class="form-control form-control-sm" type="text" id="userName" name="userName" value="">
+					<label for="userName">名前を入力してください。</label>
+				</div>
+				<div class="form-inline">
+					<select class="form-control" id="year" name="year">
+						<option value="">年</option>        						
+						<?php for($i = date('Y', time()); $i >= date('Y', time())-100; $i--){ ?>
+    					<option value="<?=$i ?>"><?=$i ?></option>
+						<?php }	?>
+					</select>&nbsp;年&nbsp;&nbsp;
+					<select class="form-control" id="month" name="month">
+						<option value="">月</option>        						
+						<?php for($i = 1; $i <= 12; $i++){ ?>
+    					<option value="<?=$i ?>"><?=$i ?></option>
+						<?php }	?>
+					</select>&nbsp;月&nbsp;&nbsp;
+					<select class="form-control" id="day" name="day">
+						<option value="">日</option>        						
+						<?php for($i = 1; $i <= 31; $i++){ ?>
+    					<option value="<?=$i ?>"><?=$i ?></option>
+						<?php }	?>
+					</select>&nbsp;日&nbsp;&nbsp;
+				</div>
+				<div class="md-form form-sm">
+					<input class="form-control form-control-sm" type="text" id="userPhoneNumber" name="userPhoneNumber" value="">
+					<label for="userPhoneNumber">電話番号を入力してください。</label>
+				</div>
+				<div class="md-form form-sm form-inline" style="margin:0">
+					<input class="form-control form-control-sm col-sm-8" type="email" id="userEmail" name="userEmail" value="">&nbsp;
+					<label for="userEmail">E-メールを入力してください。</label>
+					<button type="button" class="btn btn-default" onclick="userEmailCheck();">重複チェック</button>
+				</div>
+				<div class="md-form form-sm form-inline">
+					<input class="form-control form-control-sm col-sm-4" type="text" id="userZipCode" name="userZipCode" value="">&nbsp;
+					<label for="userZipCode">郵便番号</label>
+					<button type="button" class="btn btn-default" onclick="searchZipCode();">検索</button>
+				</div>
+				<div class="md-form form-sm">
+					<input class="form-control form-control-sm" type="text" id="userAddress1" name="userAddress1" value="">
+					<label for="userAddress1">都道府県</label>
+				</div>
+				<div class="md-form form-sm">
+					<input class="form-control form-control-sm" type="text" id="userAddress2" name="userAddress2" value="">
+					<label for="userAddress2">詳細住所を入力してください。（選択）</label>
+				</div>
             	<div class="div-right">
             		<button type="submit" name="insertUser" class="btn btn-primary">会員登録</button>
             		<button type="button" class="btn btn-danger" onclick="history.back();">取消</button>
@@ -239,14 +231,16 @@ if(isset($_POST['insertUser'])){
 	</div>
 	
 	
-	
-<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!-- Popper JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="../btjs/jquery.min.js"></script>
+<script src="../btjs/popper.min.js"></script>
+<script src="../btjs/bootstrap.min.js"></script>
+<script src="../btjs/mdb.min.js"></script>
 <script src="../js/user.js"></script>
+<script>
+$(document).ready(function() {
+	$('.mdb-select').materialSelect();
+	});
+</script>
 
 
 </body>

@@ -1,90 +1,114 @@
 <?php 
 session_start();
+
+$conn = mysqli_connect(
+    'localhost',
+    'root',
+    '123456',
+    'fleamarket'
+    );
+
+/**
+ * DB接続チェックする
+ */
+if(mysqli_connect_errno()){
+    $errorMsg = "DB接続に失敗しました。";
+    $path = "index";
+    header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
+    exit;
+}
+
+$sql = "
+        SELECT
+            *
+            FROM
+                userinfo
+            ORDER BY
+                user_no
+        ";
+/**
+ * SQLを実行しデータを取得する
+ * @var unknown $result
+ */
+$result = mysqli_query($conn, $sql);
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>会員管理 | フリマシステム</title>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<!-- Bootstrap core CSS -->
+<link href="../btcss/bootstrap.min.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="../btcss/mdb.min.css" rel="stylesheet">
+<!-- Your custom styles (optional) -->
+<link href="../btcss/style.css" rel="stylesheet">
+<!-- MDBootstrap Datatables  -->
+<link href="../btcss/addons/datatables2.min.css" rel="stylesheet">
+
 <link rel="stylesheet" href="../css/user.css">
-<script>
-window.onload = function(){
-	$.ajax({
-		type : "POST",
-		url : "./listUserAjax.php",
-		success : function(data){
-			if(data){
-				for(var i = 0; i < data['result'].length; i++){
-					var userNo = data['result'][i].userNo;
-					var userId = data['result'][i].userId;
-					var userName = data['result'][i].userName;
-					var userCreateDate = data['result'][i].userCreateDate;
-					var userDeleteCheck = data['result'][i].userDeleteCheck;
-					if(userDeleteCheck == '0') {
-						userDeleteCheck = '会員';
-					}else{
-						userDeleteCheck = '非会員';
-					}
-					$('#userListResult').append("<tr>"+
-												"<td>"+userNo+"</td>"+
-												"<td><a href='#' data-toggle='modal' data-target='#detailUser'>"+userId+"</a></td>"+
-												"<td>"+userName+"</td>"+
-												"<td>11</td>"+
-												"<td>11</td>"+
-												"<td>11</td>"+
-												"<td>"+userCreateDate.substring(0, 11)+"</td>"+
-												"<td>"+userDeleteCheck+"</td>"+
-												"</tr>"
-							);
-					
-					
-				} 
-			}
-		}
-	});
-}
-</script>
 </head>
 <body>
 
 <?php require_once '../menu/menunav.php';?>
 
 <div class="container">
-	<table class="table">
+	<div style="margin-top:100px;">
+		<h1>会員管理</h1>
+	</div>
+
+	<table class="table" id="dtBasicExample">
 		<thead>
-			<tr style="">
+			<tr>
 				<th style="width:5%;">No.</th>
-				<th style="width:15%;">ID</th>
-				<th style="width:15%;">名前</th>
+				<th style="width:10%;">ID</th>
+				<th style="width:10%;">名前</th>
 				<th style="width:20%;">評価(いいね、悪い)</th>
-				<th style="width:10%;">出品数</th>
-				<th style="width:10%;">販売完了</th>
+				<th style="width:15%;">出品数</th>
+				<th style="width:15%;">販売完了</th>
 				<th style="width:15%;">登録日</th>
 				<th style="width:10%;">会員有無</th>
 			</tr>
 		</thead>
-		<tbody id="userListResult">
+      	<tbody id="userListResult">
+			<?php 
+			     if(mysqli_num_rows($result) > 0){
+                    while($data = mysqli_fetch_assoc($result)){
+            ?>
+      		<tr>
+				<td><?=$data['user_no']?></td>
+    			<td><a href="javascript:void(0);" onclick="asdfasdf()" ><?=$data['user_id']?></a></td>
+    			<td><?=$data['user_name']?></td>
+    			<td>11</td>
+    			<td>11</td>
+    			<td>11</td>
+    			<td><?=$data['user_createdate']?></td>
+    			<td><?php $data['user_deletecheck'] == '0' ? print "会員" : print "非会員"?></td>
+			</tr>
+      		<?php 
+                    }
+                }
+                mysqli_free_result($result);
+                mysqli_close($conn);
+            ?>
 		</tbody>
+		
 	</table>
 </div>
 
 
 
-
-
-
     <!-- 詳細情報変更MODAL -->
-	<div class="modal" id="detailUser">
+	<div class="modal" id="detaccilUser">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<form id="detailUserUpdate" name="detailUserUpdate" method="post">
 					<input type="hidden" id="userNo" name="userNo" value="<?=$data['user_no'] ?>">
                     <!-- Modal Header -->
                     <div class="modal-header">
-                        <h4 class="modal-title">詳細情報</h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">詳細情報変更</h4>
+                        <button type="button" class="close detailUserUpdateModalClose" data-dismiss="modal">&times;</button>
                     </div>
                     
                     <!-- Modal body -->
@@ -133,27 +157,80 @@ window.onload = function(){
         
                     <!-- Modal footer -->
                     <div class="modal-footer">
-                    	<button type="button" class="btn btn-primary" onclick="#">変更</button>
-                   		<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                    	<button type="button" class="btn btn-primary" onclick="return isDetailUserUpdate();">変更</button>
+                   		<button type="button" class="btn btn-danger detailUserUpdateModalClose" data-dismiss="modal">取消</button>
                     </div>
 				</form>	
 			</div>
 		</div>
 	</div>
+	
+<script src="../btjs/jquery.min.js"></script>
+<script src="../btjs/popper.min.js"></script>
+<script src="../btjs/bootstrap.min.js"></script>
+<script src="../js/user.js"></script>
+  <!-- MDBootstrap Datatables  -->
+<script type="text/javascript" src="../btjs/addons/datatables2.min.js"></script>
+<script>
+$(document).ready(function () {
+	  $('#dtBasicExample').DataTable({
+		  "ordering": false
+		  });
+	  
+	  $('.dataTables_length').addClass('bs-select');
+	});
 
+function asdfasdf(){
+	$('#detaccilUser').on('show.bs.modal', function() {          
+       
+    });
+}
+/* function userSearch(){
+	var userSearch = $('#userSearch').val();
+	$.ajax({
+		type : "POST",
+		url : "./searchUserAjax.php",
+		data : {userSearch : userSearch},
+		success : function(data){
+			$('#userListResult').html('');
+			dataTable(data);
+		} 
+	});
+}
 
+function dataTable(data){
+	if(data){
+		alert(data['result'][0].userNo);
+		for(var i = 0; i < data['result'].length; i++){
+			var userNo = data['result'][i].userNo;
+			var userId = data['result'][i].userId;
+			var userName = data['result'][i].userName;
+			var userLikeCount = data['result'][i].userLikeCount;
+			var userHateCount = data['result'][i].userHateCount;
+			var userCreateDate = data['result'][i].userCreateDate;
+			var userDeleteCheck = data['result'][i].userDeleteCheck;
 
-
-
-
-
-
-<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!-- Popper JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script src="../js/user.js"></script>​
+			if(userDeleteCheck == '0') {
+				userDeleteCheck = '会員';
+			}else{
+				userDeleteCheck = '非会員';
+			}
+			$('#userListResult').append("<tr>"+
+										"<td>"+userNo+"</td>"+
+										"<td><a href='javascript:void(0);' onclick=\"modalFunction(\'"+data+"\')\";>"+userId+"</a></td>"+
+										"<td>"+userName+"</td>"+
+										"<td>いいね："+userLikeCount+"、悪い："+userHateCount+"</td>"+
+										"<td>11</td>"+
+										"<td>11</td>"+
+										"<td>"+userCreateDate.substring(0, 11)+"</td>"+
+										"<td>"+userDeleteCheck+"</td>"+
+										"</tr>"
+					);
+			
+			
+		}
+	}
+} */
+</script>
 </body>
 </html>

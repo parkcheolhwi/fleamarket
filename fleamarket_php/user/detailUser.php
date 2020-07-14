@@ -46,10 +46,14 @@ if (mysqli_num_rows($result) > 0) {
 <head>
 <meta charset="UTF-8">
 <title>会員情報 | フリマシステム</title>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="../css/user.css">
+<!-- Bootstrap core CSS -->
+<link href="../btcss/bootstrap.min.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="../btcss/mdb.min.css" rel="stylesheet">
+<!-- Your custom styles (optional) -->
+<link href="../btcss/style.css" rel="stylesheet">
 
+<link rel="stylesheet" href="../css/user.css">
 </head>
 <body>
     
@@ -58,10 +62,10 @@ if (mysqli_num_rows($result) > 0) {
     	<div class="row">
     		<div class="col-lg-3" style="height:100%">
     			<h1 class="my-4">会員情報</h1>
-        		<div class="list-group">
-        			<a href="#" class="list-group-item" data-toggle="modal" data-target="#passwordUpdate">パスワード変更</a>
-        			<a href="#" class="list-group-item" data-toggle="modal" data-target="#deleteUser">会員脱退</a>
-        		</div>
+    			<div class="list-group">
+                	<button type="button" class="list-group-item list-group-item-action" data-toggle="modal" data-target="#passwordUpdate">パスワード変更	</button>
+                	<button type="button" class="list-group-item list-group-item-action" data-toggle="modal" data-target="#deleteUser">会員脱退</button>
+                </div>
     		</div>	
 	
         	<div class="col-lg-9">
@@ -74,7 +78,7 @@ if (mysqli_num_rows($result) > 0) {
             				<td>ID：</td>
             				<td><?=$data['user_id'] ?></td>
             				<td>PASSWORD：</td>
-            				<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#passwordUpdate">パスワード変更</button></td>
+            				<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#passwordUpdate" style="margin:0">パスワード変更</button></td>
             			</tr>
             			<tr>
             				<td>名前：</td>
@@ -248,12 +252,10 @@ if (mysqli_num_rows($result) > 0) {
 		</div>
 	</div>
 	
-<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!-- Popper JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+	
+<script src="../btjs/jquery.min.js"></script>
+<script src="../btjs/popper.min.js"></script>
+<script src="../btjs/bootstrap.min.js"></script>
 <script src="../js/user.js"></script>
     ​
 </body>
