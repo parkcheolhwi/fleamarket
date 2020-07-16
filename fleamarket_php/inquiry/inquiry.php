@@ -22,6 +22,8 @@ $sql = "
             inquiryinfo
         WHERE
             user_no = {$_SESSION['userInfo']['user_no']}
+        ORDER BY 
+            inquiry_no DESC;
     ";
 
 $result = mysqli_query($conn, $sql);
@@ -32,11 +34,13 @@ $result = mysqli_query($conn, $sql);
 <head>
 <meta charset="UTF-8">
 <title>会員登録 | フリマシステム</title>
-
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 <link href="../btcss/bootstrap.min.css" rel="stylesheet">
 <link href="../btcss/mdb.min.css" rel="stylesheet">
 <link href="../btcss/style.css" rel="stylesheet">
-
+<link href="../btcss/addons/datatables2.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/user.css">
 
 </head>
 <body>
@@ -99,7 +103,7 @@ $result = mysqli_query($conn, $sql);
                                 <label for="inquiryTitle">タイトルを入力してください。</label>
                             </div>
                             <div class="md-form">
-                                <textarea class="md-textarea form-control" rows="5" id="inquiryContent" name="inquiryContent"></textarea>
+                                <textarea class="md-textarea form-control" rows="5" id="inquiryContent" name="inquiryContent" style="overflow-y:scroll"></textarea>
                                 <label for="inquiryContent">内容を入力してください。</label>
                             </div>
 

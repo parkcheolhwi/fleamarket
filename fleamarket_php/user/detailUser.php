@@ -46,13 +46,12 @@ if (mysqli_num_rows($result) > 0) {
 <head>
 <meta charset="UTF-8">
 <title>会員情報 | フリマシステム</title>
-<!-- Bootstrap core CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 <link href="../btcss/bootstrap.min.css" rel="stylesheet">
-<!-- Material Design Bootstrap -->
 <link href="../btcss/mdb.min.css" rel="stylesheet">
-<!-- Your custom styles (optional) -->
 <link href="../btcss/style.css" rel="stylesheet">
-
+<link href="../btcss/addons/datatables2.min.css" rel="stylesheet">
 <link rel="stylesheet" href="../css/user.css">
 </head>
 <body>
@@ -78,7 +77,7 @@ if (mysqli_num_rows($result) > 0) {
             				<td>ID：</td>
             				<td><?=$data['user_id'] ?></td>
             				<td>PASSWORD：</td>
-            				<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#passwordUpdate" style="margin:0">パスワード変更</button></td>
+            				<td><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#passwordUpdate" style="margin:0">パスワード変更</button></td>
             			</tr>
             			<tr>
             				<td>名前：</td>
@@ -135,7 +134,7 @@ if (mysqli_num_rows($result) > 0) {
                         		<td>ID：</td>
                         		<td><?=$data['user_id'] ?></td>
                         		<td>パスワード：</td>
-                        		<td><button type="button" class="btn btn-primary"  data-dismiss="modal" data-toggle="modal" data-target="#passwordUpdate" >パスワード変更</button></td>
+                        		<td><button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" data-toggle="modal" data-target="#passwordUpdate" >パスワード変更</button></td>
                     		</tr>
                     		<tr>
                     			<td>名前：</td>
@@ -256,6 +255,7 @@ if (mysqli_num_rows($result) > 0) {
 <script src="../btjs/jquery.min.js"></script>
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>
+<script src="../btjs/mdb.min.js"></script>
 <script src="../js/user.js"></script>
     ​
 </body>

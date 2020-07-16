@@ -32,9 +32,13 @@ $result = mysqli_query($conn, $sql);
 <head>
 <meta charset="UTF-8">
 <title>お問い合わせ| フリマシステム</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 <link href="../btcss/bootstrap.min.css" rel="stylesheet">
 <link href="../btcss/mdb.min.css" rel="stylesheet">
 <link href="../btcss/style.css" rel="stylesheet">
+<link href="../btcss/addons/datatables2.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/user.css">
 </head>
 <body>
     
@@ -122,8 +126,8 @@ $result = mysqli_query($conn, $sql);
             </div>
             
             <div class="modal-footer">
-            	<button type="button" class="btn btn-success" onclick="inquiryReplyContent();">Get it now</button>
-           		<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            	<button type="button" class="btn btn-success" id="replyButton" onclick="inquiryReplyContent();">返信する</button>
+           		<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
             </div>
             
         </div>

@@ -85,7 +85,7 @@ function userIdCheck(){
 	}
 	$.ajax({
 		type : "POST",
-		url : "./userIdCheck.php",
+		url : "./userIdCheckAjax.php",
 		data : {userId : userId},
 		success : function(data){
 			if(data){
@@ -139,7 +139,7 @@ function userEmailCheck()
 	
 	$.ajax({
 		type : "POST",
-		url : "./userEmailCheck.php",
+		url : "./userEmailCheckAjax.php",
 		data : {userEmail : userEmail},
 		success : function(data){
 			if(data){
@@ -315,7 +315,7 @@ function isDetailUserUpdate(){
 	
 	$.ajax({
 		type : "POST",
-		url : "./detailUserUpdate.php",
+		url : "./detailUserUpdateAjax.php",
 		data : {
 			userNo : userNo,
 			userPhoneNumber : userPhoneNumber,
@@ -408,4 +408,88 @@ function findUserPasswordAjax(){
 	});
 }
 
+/*---------------------ユーザー管理----------------------------- */
+function userDetailModal(userNo){
+	
+	$.ajax({
+		type : "POST",
+		url : "./detailUserModal.php",
+		data : {userNo : userNo},
+		success : function(result){
+			$('#detailUserIdModal').html(result['result']['user_id']);
+			$('#detailUserNameModal').html(result['result']['user_name']);
+			$('#detailUserBirthModal').html(result['result']['user_birth']);
+			$('#detailUserPhoneModal').html(result['result']['user_phone']);
+			$('#detailUserEmailModal').html(result['result']['user_email']);
+			$('#detailUserAddressModal').html("("+result['result']['user_zipcode']+")"+ result['result']['user_address1'] + " " + result['result']['user_address2']);
+			$('#detailUserCreatedateModal').html(result['result']['user_createdate']);
+			$('#detailUserUpdatedateModal').html(result['result']['user_updatedate']);
+			$('#detailUserDeletedateModal').html(result['result']['user_deletedate']);
+			$('#detailUserLikeCountModal').html(result['result']['user_likecount']);
+			$('#detailUserHateCountModal').html(result['result']['user_hatecount']);
+			if(result['result']['user_deletecheck'] == '0'){
+				$('#detailUserDeleteCheckModal').html('(会員)');
+			}else{
+				$('#detailUserDeleteCheckModal').html('(非会員)');
+			}
+			$('#detailUserModal').modal('show');
+			
+		}
+	});
+}
 
+
+/**
+ * いいねボタン押すといいね表示される
+ * @returns
+ */
+$('#userLikeCountButton').click(function(){
+	var userNo = $('#goodsDetailForm [name="userNo"]').val();
+	var userINo = $('#goodsDetailForm [name="userINo"]').val();
+	if(userINo == ''){
+		alert('ログインしてください。');
+		return false;
+	}
+	
+	$.ajax({
+		type : 'POST',
+		url : '../user/likeCountAjax.php',
+		data : {
+			userNo : userNo,
+			userINo : userINo
+		},
+		success : function(result){
+			if(result == '9') alert('一回した押せません。');
+			$('#userLikeCount').html(result['result'][0].user_likecount);
+			
+		}
+	});
+});
+
+
+/**
+ * 悪いボタン押すと悪い表示される
+ * @returns
+ */
+$('#userHateCountButton').click(function(){
+	var userNo = $('#goodsDetailForm [name="userNo"]').val();
+	var userINo = $('#goodsDetailForm [name="userINo"]').val();
+	if(userINo == ''){
+		alert('ログインしてください。');
+		return false;
+	}
+	$.ajax({
+		type : 'POST',
+		url : '../user/hateCountAjax.php',
+		data : {
+			userNo : userNo,
+			userINo : userINo
+		},
+		success : function(result){
+			if(result == '9') alert('一回した押せません。');
+			$('#userHateCount').html(result['result'][0].user_hatecount);
+			
+			
+		}
+	});
+});

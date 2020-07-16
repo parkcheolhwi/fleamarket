@@ -95,16 +95,14 @@ if(isset($_POST['login'])){
 <head>
 <meta charset="UTF-8">
 <title>ログイン | フリマシステム</title>
-<!-- Latest compiled and minified CSS -->
-<!-- Bootstrap core CSS -->
-<link href="../btcss/bootstrap.min.css" rel="stylesheet">
-<!-- Material Design Bootstrap -->
-<link href="../btcss/mdb.min.css" rel="stylesheet">
-<!-- Your custom styles (optional) -->
-<link href="../btcss/style.css" rel="stylesheet">
 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+<link href="../btcss/bootstrap.min.css" rel="stylesheet">
+<link href="../btcss/mdb.min.css" rel="stylesheet">
+<link href="../btcss/style.css" rel="stylesheet">
+<link href="../btcss/addons/datatables2.min.css" rel="stylesheet">
 <link rel="stylesheet" href="../css/user.css">
-<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 </head>
 <body>
 	<?php require_once '../menu/menunav.php';?>
@@ -116,10 +114,12 @@ if(isset($_POST['login'])){
     		<h3 style="text-align:center; margin-top:20px;">ログイン</h3>
     		<form  action="./login.php" method="post" onsubmit="return loginCheck();">
     			<div class="md-form">
+    				<i class="fas fa-user prefix"></i>
                     <input  type="text" class="form-control" id="userId" name="userId" value="<?php if(isset($_COOKIE['userId'])) echo $_COOKIE['userId']?>">
                     <label for="userId">IDを入力してください。</label>
                 </div>
         		<div class="md-form">
+        			<i class="fas fa-lock prefix"></i>
                     <input  type="password" class="form-control" id="userPassword" name="userPassword" value="<?php if(isset($_COOKIE['userPassword'])) echo $_COOKIE['userPassword']?>">
                     <label for="userPassword">パスワードを入力してください。</label>
                 </div>
@@ -146,19 +146,20 @@ if(isset($_POST['login'])){
     			
     			
     			<!-- Google, FaceBook, ログイン -->
-
-				<div class="btn-group form-group" style="margin : 3px 0 0 0;">
-					<a class='btn btn-light disabled'><i class="fa fa-google-plus" style="width:16px; height:20px"></i></a>
-					<a class='btn btn-light' href='' style="width:27em;"> Sign in with Google</a>
-				</div>
-				<div class="btn-group form-group" style="margin : 3px 0 0 0;">
-					<a class='btn btn-primary disabled'><i class="fa fa-facebook" style="width:16px; height:20px"></i></a>
-					<a class='btn btn-primary ' href='' style="width:27em"> Sign in with Facebook</a>
-				</div>	
-				<div class="btn-group form-group" style="margin : 3px 0 0 0;">
-					<a class='btn btn-info disabled'><i class="fa fa-twitter" style="width:16px; height:20px"></i></a>
-					<a class='btn btn-info ' href='' style="width:27em"> Sign in with Twitter</a>
-				</div>	
+    			<div style="text-align : center; margin-top:30px">
+            		<a type="button" class="light-blue-text mx-2">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a type="button" class="light-blue-text mx-2">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a type="button" class="light-blue-text mx-2">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a type="button" class="light-blue-text mx-2">
+                        <i class="fab fa-github"></i>
+                    </a> 
+                </div>
         	</form>	
     	</div>
     	<div class="col-lg-5"></div>

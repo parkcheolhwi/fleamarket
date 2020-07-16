@@ -73,23 +73,30 @@ function inquiryReplyModal(inquiryNo){
 		data : {inquiryNo : inquiryNo},
 		success : function(result){
 			
+			
 			$('#myModalLabel').html(result['result']['inquiry_title']);
 			$('#myModalContent').html(result['result']['inquiry_content']);
 			
 			if(result['result']['inquiry_replycheck'] == '0'){
 				$('#myModalReplyNo').val(result['result']['inquiry_no']);
 				$('#myModalReplyContent').html('<textarea class="md-textarea form-control" rows="3" id="inquiry_replycontent" name="inquiry_replycontent"></textarea>');
+				$('#replyButton').show();
 				$('#myModalReplyDate').html('');
 			}else{				
 				$('#myModalReplyNo').val(result['result']['inquiry_no']);
 				$('#myModalReplyContent').html(result['result']['inquiry_replycontent']);
 				$('#myModalReplyDate').html(result['result']['inquiry_replydate']);
+				$('#replyButton').hide();
 			}
 			$('#centralModalSm').modal("show");
 		}
 	});  
 }
 
+/**
+ * 返信する関数
+ * @returns
+ */
 function inquiryReplyContent(){
 	var myModalReplyNo = $('#myModalReplyNo').val();
 	var myModalReplyContent = $('#inquiry_replycontent').val();
@@ -102,7 +109,13 @@ function inquiryReplyContent(){
 			replyContent : myModalReplyContent
 		},
 		success : function(result){
-			alert(result);
+			if(result){
+				alert('返信しました。');
+				location.href="./listInquiry.php";
+			}else{
+				alert('返信に失敗しました。');
+			}
+			
 		}
 	});
 

@@ -102,7 +102,7 @@ if(isset($_POST['insertUser'])){
     $mailTitle = "会員登録しました。";
     $mailContent = "<html><body>{$singupData['userId']}様。<br><br>";
     $mailContent .= "会員登録ありがとうございます。<br> 以下のURLで認証を行ってください。<br><br>";
-    $mailContent .= "<a href='http://localhost:8712/fleamarket_php/user/insertUserCheck.php?userId={$singupData['userId']}&num={$singupData['userMailCheck']}'>認証する</a>";    
+    $mailContent .= "<a href='http://localhost:8712/fleamarket_php/user/insertUserCheckAjax.php?userId={$singupData['userId']}&num={$singupData['userMailCheck']}'>認証する</a>";    
     
     require_once '../PHPMail/PHPMailer.php';
     require_once '../PHPMail/SMTP.php';
@@ -140,14 +140,12 @@ if(isset($_POST['insertUser'])){
 <head>
 <meta charset="UTF-8">
 <title>会員登録 | フリマシステム</title>
-
-<!-- Bootstrap core CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 <link href="../btcss/bootstrap.min.css" rel="stylesheet">
-<!-- Material Design Bootstrap -->
 <link href="../btcss/mdb.min.css" rel="stylesheet">
-<!-- Your custom styles (optional) -->
 <link href="../btcss/style.css" rel="stylesheet">
-
+<link href="../btcss/addons/datatables2.min.css" rel="stylesheet">
 <link rel="stylesheet" href="../css/user.css">
 
 
@@ -236,11 +234,7 @@ if(isset($_POST['insertUser'])){
 <script src="../btjs/bootstrap.min.js"></script>
 <script src="../btjs/mdb.min.js"></script>
 <script src="../js/user.js"></script>
-<script>
-$(document).ready(function() {
-	$('.mdb-select').materialSelect();
-	});
-</script>
+
 
 
 </body>
