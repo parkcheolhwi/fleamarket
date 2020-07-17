@@ -1,4 +1,8 @@
 <?php
+/**
+ * カートボタンを押すとカートに格納される
+ */
+session_start();
 $conn = mysqli_connect(
     'localhost',
     'root',
@@ -16,10 +20,33 @@ if(mysqli_connect_errno()){
     exit;
 }
 
+if(!isset($_SESSION['userInfo'])){
+    echo "8";
+    return;
+}
+
 $insertCartData = array(
     'goodsNo' => mysqli_real_escape_string($conn, $_POST['goodsNo']),
-    'userINo' => mysqli_real_escape_string($conn, $_POST['userINo'])
+    'userINo' => $_SESSION['userInfo']['user_no']
 );
+
+$sql = "
+        SELECT
+            *
+            FROM
+                goods
+            WHERE
+                goods_onsale = '1'
+                AND goods_no = {$insertCartData['goodsNo']}
+";
+
+
+$result = mysqli_query($conn, $sql);
+if(mysqli_num_rows($result) > 0){
+    echo "11";
+    return;
+}
+
 
 # カートにデータがあるとリターンする
 $sql = "SELECT * FROM cart WHERE goods_no = {$insertCartData['goodsNo']} AND user_no = {$insertCartData['userINo']}";

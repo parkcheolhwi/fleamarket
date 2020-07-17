@@ -73,8 +73,6 @@ mysqli_close($conn);
         <div>
         	<form id="goodsDetailForm">
         		<input type="hidden" name="goodsNo" value="<?=$data['goods_no'] ?>">
-        		<input type="hidden" name="userNo" value="<?=$data['user_no'] ?>">
-        		<input type="hidden" name="userINo" value="<?php isset($_SESSION['userInfo']) ? print $_SESSION['userInfo']['user_no'] : print "" ?>">
     		</form>
         	<div style="text-align:right;">
     			登録日：<?=$data['goods_createdate'] ?>, 
@@ -105,10 +103,10 @@ mysqli_close($conn);
     			</tr>
     			
     			<tr>
-    				<td><button type="button" class="btn btn-outline-info" id="userLikeCountButton">いいね</button></td>
-    				<td><button type="button" class="btn btn-outline-danger"  id="userHateCountButton">悪い</button></td>
-    				<td><button type="button" class="btn btn-outline-primary" id="insertIntoCart">カートに入れる</button></td>
-    				<td><button type="button" class="btn btn-outline-primary" onclick="#">구입</button></td>
+    				<td><button type="button" class="btn btn-outline-info" onclick="userLikeCountButton('<?=$data['user_no'] ?>')">いいね</button></td>
+    				<td><button type="button" class="btn btn-outline-danger"  onclick = "userHateCountButton('<?=$data['user_no'] ?>')" >悪い</button></td>
+    		 		<td><button type="button" class="btn btn-outline-primary" onclick="insertIntoCart('<?=$data['goods_no'] ?>')">カートに入れる</button></td>
+    				<td><button type="button" class="btn btn-outline-primary" onclick="buyInserCheck();">購入</button></td>
     			</tr>
     			<tr>
     				<td colspan="4"></td>
@@ -228,6 +226,31 @@ mysqli_close($conn);
                     </div>
     			</div>
 			</form>
+		</div>
+	</div>
+	
+	
+	<!-- 購入確認Modal -->
+	<div class="modal" id="cartBuyCheckModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">購入</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                	<div class="text-primary">下記の商品を購入しますか？</div>
+            		<div id="cartBuyCheckList"></div>
+
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                	<button type="button" class="btn btn-primary" onclick="goodsBuy();">購入</button>
+               		<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+			</div>
 		</div>
 	</div>
 <script src="../btjs/jquery.min.js"></script>

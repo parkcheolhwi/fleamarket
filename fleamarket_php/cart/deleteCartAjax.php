@@ -1,4 +1,8 @@
 <?php
+/**
+ * カートの項目を削除する
+ * @var unknown $conn
+ */
 $conn = mysqli_connect(
     'localhost',
     'root',

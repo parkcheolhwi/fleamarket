@@ -2,23 +2,20 @@
  * カートに登録する
  * @returns
  */
-$('#insertIntoCart').click(function(){
-	var goodsNo = $('#goodsDetailForm [name="goodsNo"]').val();
-	var userINo = $('#goodsDetailForm [name="userINo"]').val();
-	if($('#goodsDetailForm [name="userINo"]').val() == ''){
-		alert('ログインしてください。');
-		return false;
-	}
-	
+function insertIntoCart(goodsNo){
+
 	$.ajax({
 		type : 'POST',
 		url : '../cart/insertCartAjax.php',
 		data : {
-			goodsNo : goodsNo,
-			userINo : userINo
+			goodsNo : goodsNo
 			},
 		success : function(result){
-			if(result == '9'){
+			if(result =='8'){
+				alert('ログインしてください。');
+			}else if(result =='11'){
+				alert('販売完了された商品です。');
+			}else if(result == '9'){
 				alert('同じ商品が存在します。');
 			}else if (result == '0'){
 				alert('失敗しました。');				
@@ -28,9 +25,8 @@ $('#insertIntoCart').click(function(){
 			
 		}
 	});
-
-});
-
+	
+}
 /**
  * 該当するカート内訳を削除する
  * @param cartNo
@@ -59,15 +55,20 @@ function cartDelete(cartNo){
  * チェックボックスによって購入するリストを表示する
  * @returns
  */
-function cartInserCheck(){
+function buyInserCheck(){
 	var goodsNo = [];
-	$('input[name=goodsChecked]:checked').each(function(i){
-		goodsNo.push($(this).val());
-	});
+	if(typeof($('#goodsDetailForm [name="goodsNo"]').val()) != 'undefined'){
+		goodsNo.push($('#goodsDetailForm [name="goodsNo"]').val());
+	}else{
+		$('input[name=goodsChecked]:checked').each(function(i){
+			goodsNo.push($(this).val());
+		});
+	}
+	
 	
 	$.ajax({
 		type : 'POST',
-		url : './cartBuyCheckAjax.php',
+		url : '../cart/cartBuyCheckAjax.php',
 		data : {goodsNo:goodsNo},
 		success : function(result){
 			$('#cartBuyCheckList').html('');
@@ -93,18 +94,26 @@ function cartInserCheck(){
 
 function goodsBuy(){
 	var goodsNo = [];
-	$('input[name=goodsChecked]:checked').each(function(i){
-		goodsNo.push($(this).val());
-	});
+	if(typeof($('#goodsDetailForm [name="goodsNo"]').val()) != 'undefined'){
+		goodsNo.push($('#goodsDetailForm [name="goodsNo"]').val());
+	}else{
+		$('input[name=goodsChecked]:checked').each(function(i){
+			goodsNo.push($(this).val());
+		});
+	}
 	$.ajax({
 		type : 'POST',
 		url : '../buy/goodsBuyInsertAjax.php',
 		data : {goodsNo : goodsNo},
 		success : function(result){
-			if(result == '1'){
+			if(result == '11'){
+				alert('購入完了された商品です。');
+			}else if(result == '9'){
+				alert('ログインしてください。');
+			}else if(result == '1'){
 				alert('購入しました。');
-				location.href="./cartList.php";
-			}else if (result == '9'){
+				location.href="../buy/buyList.php";
+			}else if (result == '7'){
 				alert('購入に失敗しました。');
 			}
 		}

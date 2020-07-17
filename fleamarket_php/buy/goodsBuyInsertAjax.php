@@ -1,7 +1,10 @@
 <?php 
+/**
+ * 商品を購入してカートから該当する商品を削除する
+ */
 session_start();
 /**
- * 商品リストを検索して表示
+ * 
  * @var unknown $conn
  */
 $conn = mysqli_connect(
@@ -22,8 +25,30 @@ if(mysqli_connect_errno()){
 }
 
 $goodsBuyData = $_POST['goodsNo'];
+$sql = "
+        SELECT 
+            *
+            FROM 
+                goods
+            WHERE 
+                goods_onsale = '1'
+                AND goods_no IN (
+";
+for($i = 0; $i < count($goodsBuyData); $i++){
+    $sql .= $goodsBuyData[$i];
+    if($i != count($goodsBuyData)-1) $sql .= " , ";
+}
+$sql .= " ) ";
 
-
+$result = mysqli_query($conn, $sql);
+if(mysqli_num_rows($result) > 0){
+    echo "11";
+    return;
+}
+if(!isset($_SESSION['userInfo'])){
+    echo "9";
+    return;
+}
 $sql ="
     INSERT INTO
             buy
@@ -91,9 +116,9 @@ if(mysqli_query($conn, $sql)){
     if(mysqli_query($conn, $sql)){
         echo "1";    
     }else{
-        echo "9";
+        echo "7";
     }
 }else{
-    echo "9";
+    echo "7";
 }
 ?>

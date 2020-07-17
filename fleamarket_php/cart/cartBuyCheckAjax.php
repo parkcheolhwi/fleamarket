@@ -1,6 +1,9 @@
 <?php 
 /**
- * 商品リストを検索して表示
+ *　購入ボタンを押すと購入するリストを表示し確認する 
+ */
+/**
+ * 
  * @var unknown $conn
  */
 $conn = mysqli_connect(
@@ -24,13 +27,10 @@ $cartBuyCheckData = $_POST['goodsNo'];
 
 $sql = "
         SELECT
-            cart.cart_no, cart.user_no, cart.cart_createdate, goods.*
+            *
             FROM
-                cart
-            INNER JOIN
                 goods
-            ON
-                cart.goods_no = goods.goods_no
+           
             WHERE
         ";
 for($i = 0; $i < count($cartBuyCheckData); $i++){

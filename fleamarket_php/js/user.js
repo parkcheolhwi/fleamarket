@@ -443,53 +443,47 @@ function userDetailModal(userNo){
  * いいねボタン押すといいね表示される
  * @returns
  */
-$('#userLikeCountButton').click(function(){
-	var userNo = $('#goodsDetailForm [name="userNo"]').val();
-	var userINo = $('#goodsDetailForm [name="userINo"]').val();
-	if(userINo == ''){
-		alert('ログインしてください。');
-		return false;
-	}
-	
+function userLikeCountButton(userNo){
 	$.ajax({
 		type : 'POST',
 		url : '../user/likeCountAjax.php',
 		data : {
-			userNo : userNo,
-			userINo : userINo
+			userNo : userNo
 		},
 		success : function(result){
-			if(result == '9') alert('一回した押せません。');
+			if(result == '8'){
+				alert('ログインしてください。');
+				return false;
+			}else if(result == '9') {
+				alert('一回した押せません。');
+				return false;
+			}
 			$('#userLikeCount').html(result['result'][0].user_likecount);
 			
 		}
 	});
-});
-
+}
 
 /**
  * 悪いボタン押すと悪い表示される
  * @returns
  */
-$('#userHateCountButton').click(function(){
-	var userNo = $('#goodsDetailForm [name="userNo"]').val();
-	var userINo = $('#goodsDetailForm [name="userINo"]').val();
-	if(userINo == ''){
-		alert('ログインしてください。');
-		return false;
-	}
+function userHateCountButton(userNo){
 	$.ajax({
 		type : 'POST',
 		url : '../user/hateCountAjax.php',
 		data : {
-			userNo : userNo,
-			userINo : userINo
+			userNo : userNo
 		},
 		success : function(result){
-			if(result == '9') alert('一回した押せません。');
+			if(result == '8'){
+				alert('ログインしてください。');
+				return false;
+			}else if(result == '9') {
+				alert('一回した押せません。');
+				return false;
+			}
 			$('#userHateCount').html(result['result'][0].user_hatecount);
-			
-			
 		}
 	});
-});
+}

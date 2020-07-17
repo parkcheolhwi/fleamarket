@@ -1,4 +1,9 @@
 <?php 
+session_start();
+if(!isset($_SESSION['userInfo'])){
+    echo "8";
+    return;
+}
 /**
  * 商品詳細でコメントしてリストを表示する
  * @var unknown $conn
@@ -22,7 +27,7 @@ if(mysqli_connect_errno()){
 
 $likeCountData = array(
     'userNo' => mysqli_real_escape_string($conn, $_POST['userNo']),
-    'userINo' => mysqli_real_escape_string($conn, $_POST['userINo'])
+    'userINo' => mysqli_real_escape_string($conn, $_SESSION['userInfo']['user_no'])
 );
 
 $sql = "

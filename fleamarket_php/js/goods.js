@@ -50,13 +50,13 @@ function goodsInsert(){
 var goodsArea = '';
 $("#goodsAreaSelect").change(function(){
 	goodsArea = $(this).val();
-   console.log(goodsArea);
-   goodsAllList();
+	goodsAllList();
 })
 function goodsAllList(){
 	
 	var searchGoods = $('#goodsSearch').val();
 	if(goodsArea != '') goodsArea = goodsArea;
+	
 	$.ajax({
 		type : 'POST',
 		url : "./goodsAllListAjax.php",
@@ -84,21 +84,24 @@ function goodsDivAppend(result){
 	}
 	
 	for(var i = 0; i < result['result'].length; i++){
+		var img = "../img/123.jpg";
+		if(result['result'][i].goods_onsale == '1') img = "../img/soldout.png";
+		
 		$('#goodsDiv').append(
 				'<hr>'+
 				'<div style="display: flex;flex-direction: row">' +
 				'<div style="margin: 2px; padding: 5px; flex: 0 1 10%;">' +
-				'<img src="../img/123.jpg" style="max-height: 74px; max-width: 74px">' +
+				'<img src=\''+img+'\' style="max-height: 74px; max-width: 74px">' +
 				'</div>'+
 				'<div style="margin: 2px; padding: 5px; flex: 0 1 70%;">' +
-				'<h5 style="margin:0" class="text-dark font-weight-bold"><a href="./goodsDetail.php?goods_no='+result['result'][i].goods_no+'">'+ result['result'][i].goods_title +'</a></h5>' +
-				'<p style="margin-bottom:10px"><span class="text-dark font-weight-bold">' + result['result'][i].goods_price + '</span></p>' +
+				'<h5 style="margin:0" class="text-dark font-weight-bold"><a href="./goodsDetail.php?goods_no='+result['result'][i].goods_no+'" >'+ result['result'][i].goods_title +'</a></h5>' +
+				'<p style="margin-bottom:10px"><span class="text-dark font-weight-bold">' + result['result'][i].goods_price + '円</span></p>' +
 				'<p style="margin:0"><span class="text-dark">' + result['result'][i].goods_content + '</span></p>' +
 				'</div>' +
 				'<div style="margin: 2px; padding: 5px; flex: 0 1 20%;">' +
 				'<p style="margin:0">修正日：' + result['result'][i].goods_updatedate + '</p>' +
 				'<p style="margin-bottom:10px">登録日：' + result['result'][i].goods_createdate+ '</p>' +
-				'<p style="margin:0"><button type="button" class="btn btn-info btn-sm" >카트에넣기</button></p>' +
+				'<p style="margin:0"><button type="button" class="btn btn-info btn-sm" onclick="insertIntoCart(\''+result['result'][i].goods_no+'\')" >カートに入れる</button></p>' +
 				'</div>' +
 				'</div>' 
 				);
@@ -234,7 +237,6 @@ function goodsComment(){
 						result['result'][i].goods_comment_content + 
 						'</div>'
 							);
-				
 			}
 		}
 	});

@@ -63,7 +63,7 @@ $result = mysqli_query($conn, $sql);
                 <input type="checkbox" class="custom-control-input" id="defaultChecked">
                 <label class="custom-control-label text-dark font-weight-bold" for="defaultChecked">전체선택</label>
             </div>
-            <p style="margin:0; "><button type="button" class="btn btn-primary btn-sm " onclick="cartInserCheck();">購入</button></p>
+            <p style="margin:0; "><button type="button" class="btn btn-primary btn-sm " onclick="buyInserCheck();">購入</button></p>
 		</div>
 		<div style="clear:both"></div>
 		<!-- カートリスト -->
