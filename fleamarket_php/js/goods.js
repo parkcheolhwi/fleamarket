@@ -23,7 +23,6 @@ function goodsInsert(){
 	}
 		
 	var formData = new FormData($("#goodsInsertForm")[0]);
-	
 	$.ajax({
 		type : 'POST',
 		url : "./goodsInsertAjax.php",
@@ -31,7 +30,7 @@ function goodsInsert(){
 		contentType: false,
 		data : formData,
 		success : function(result){
-			
+			console.log(result);
 			$('#goodsDiv').html('');
 			$('#goodsTitle').val('');
 			$('#goodsPrice').val('');
@@ -65,7 +64,7 @@ function goodsAllList(){
 			goodsArea : goodsArea
 			},
 		success : function(result){
-			$('#goodsDiv').html('');		
+			$('#goodsDiv').html('');	
 			goodsDivAppend(result);
 		}
 	});
@@ -83,15 +82,36 @@ function goodsDivAppend(result){
 		$('#goodsAreaList').html('');
 	}
 	
+	
 	for(var i = 0; i < result['result'].length; i++){
-		var img = "../img/123.jpg";
-		if(result['result'][i].goods_onsale == '1') img = "../img/soldout.png";
+		/* 条件によって写真が変わる */
+		var img = '<img src=\'../upload'+result['result'][i].goods_filerealname+'\' style="max-height: 74px; max-width: 74px">'
+		var button = '<button type="button" class="btn btn-info btn-sm" onclick="insertIntoCart(\''+result['result'][i].goods_no+'\')" >カートに入れる</button>';
+		if(result['result'][i].goods_filerealname == null){
+			img = '<img src="../img/noImg.jpg" style="max-height: 74px; max-width: 74px">'
+		}
 		
+		if(result['result'][i].goods_onsale == '1'){
+			img = '<img src="../img/soldout.png" style="max-height: 74px; max-width: 74px">';
+		}
+
+		if (result['userAuthority'] == "9"){
+			if(result['result'][i].goods_onsale == '1' && result['result'][i].goods_commission == '1'){ 
+				button = '<button type="button" class="btn btn-danger btn-sm" onclick="#" >要請完了</button>';
+			}else if(result['result'][i].goods_onsale == '1' && result['result'][i].goods_commission == '0') {
+				button = '<button type="button" class="btn btn-success btn-sm" onclick="commissionCreate(\''+result['result'][i].goods_no+'\')" >手数料要請</button>';
+			}else{
+				button ="";
+			}
+		} else{
+			if(result['result'][i].goods_onsale == '1')	button = "";
+		}
+
 		$('#goodsDiv').append(
 				'<hr>'+
 				'<div style="display: flex;flex-direction: row">' +
 				'<div style="margin: 2px; padding: 5px; flex: 0 1 10%;">' +
-				'<img src=\''+img+'\' style="max-height: 74px; max-width: 74px">' +
+				img +
 				'</div>'+
 				'<div style="margin: 2px; padding: 5px; flex: 0 1 70%;">' +
 				'<h5 style="margin:0" class="text-dark font-weight-bold"><a href="./goodsDetail.php?goods_no='+result['result'][i].goods_no+'" >'+ result['result'][i].goods_title +'</a></h5>' +
@@ -101,11 +121,32 @@ function goodsDivAppend(result){
 				'<div style="margin: 2px; padding: 5px; flex: 0 1 20%;">' +
 				'<p style="margin:0">修正日：' + result['result'][i].goods_updatedate + '</p>' +
 				'<p style="margin-bottom:10px">登録日：' + result['result'][i].goods_createdate+ '</p>' +
-				'<p style="margin:0"><button type="button" class="btn btn-info btn-sm" onclick="insertIntoCart(\''+result['result'][i].goods_no+'\')" >カートに入れる</button></p>' +
+				'<p style="margin:0">'+button+'</p>' +
 				'</div>' +
 				'</div>' 
 				);
+		
 	}
+}
+/**
+ * 手数料要請する
+ * @param goodsNo
+ * @returns
+ */
+function commissionCreate(goodsNo){
+	$.ajax({
+		type : 'POST',
+		url : './commissionCreateAjax.php',
+		data : {goodsNo : goodsNo},
+		success : function(result){
+			if(result){
+				alert('手数料要請しました。');
+				location.href='./goodsList.php';
+			}else{
+				alert('手数料要請に失敗しました。');
+			}
+		}
+	});
 }
 
 /**

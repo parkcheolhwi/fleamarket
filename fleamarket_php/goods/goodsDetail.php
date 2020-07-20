@@ -105,8 +105,10 @@ mysqli_close($conn);
     			<tr>
     				<td><button type="button" class="btn btn-outline-info" onclick="userLikeCountButton('<?=$data['user_no'] ?>')">いいね</button></td>
     				<td><button type="button" class="btn btn-outline-danger"  onclick = "userHateCountButton('<?=$data['user_no'] ?>')" >悪い</button></td>
+    				<?php if(!(isset($_SESSION['userInfo']) && $_SESSION['userInfo']['user_authority'] == '9')){?>
     		 		<td><button type="button" class="btn btn-outline-primary" onclick="insertIntoCart('<?=$data['goods_no'] ?>')">カートに入れる</button></td>
     				<td><button type="button" class="btn btn-outline-primary" onclick="buyInserCheck();">購入</button></td>
+    				<?php }?>
     			</tr>
     			<tr>
     				<td colspan="4"></td>

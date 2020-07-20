@@ -24,9 +24,18 @@ if(mysqli_connect_errno()){
  * @var Ambiguous $sql
  */
 $sql = "
-        SELECT *
-            FROM userinfo
-            WHERE user_id = '{$_SESSION['userInfo']['user_id']}'
+       SELECT
+            userinfo.*, 
+            COUNT(goods.goods_no) AS goodsCount 
+            FROM 
+                userinfo 
+                LEFT JOIN 
+                    goods 
+                ON
+                     userinfo.user_no = goods.user_no 
+                WHERE 
+                     userinfo.user_no = {$_SESSION['userInfo']['user_no']}
+                GROUP BY userinfo.user_no ;
         ";
 
 /**
@@ -99,7 +108,7 @@ if (mysqli_num_rows($result) > 0) {
             				<td>お問い合わせ数：</td>
             				<td><a href="#">1</a></td>
             				<td>出品数：</td>
-            				<td><a href="#">1</a></td>
+            				<td><a href="javascript:void(0);" onclick="userGoodsCountCheck('<?=$data['user_no'] ?>')"><?=$data['goodsCount']?></a></td>
             			</tr>
         			</thead>
         		</table>	
@@ -251,7 +260,26 @@ if (mysqli_num_rows($result) > 0) {
 		</div>
 	</div>
 	
-	
+	<!-- 出品数のModal -->
+	<div class="modal" id="userGoodsCountCheckModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title" id="userGoodsCountCheckUserId"></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+            		<div id="userGoodsCountCheckList"></div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+               		<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+			</div>
+		</div>
+	</div>
 <script src="../btjs/jquery.min.js"></script>
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>

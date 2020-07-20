@@ -1,4 +1,6 @@
-<?php session_start();?>
+<?php 
+session_start();
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,7 +36,7 @@ li {
 		<hr>
 		<div>
     		<h4 class="text-dark font-weight-bold" style="float:left;">商品リスト<span id="goodsAreaList"></span></h4>
-    		<?php if(isset($_SESSION['userInfo'])){?>
+    		<?php if(isset($_SESSION['userInfo']) && $_SESSION['userInfo']['user_authority'] == '1'){?>
     		<button type="button" class="btn btn-primary" style="float:right;" onclick="openGoodsInsertModal();">登録</button>
     		<?php }?>
     		<input class="form-control col-sm-2" type="text" name="goodsSearch" id="goodsSearch" placeholder="Search" aria-label="Search" style="float:right;" onkeyup="goodsAllList();">

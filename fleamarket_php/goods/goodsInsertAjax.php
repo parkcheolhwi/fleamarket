@@ -26,7 +26,7 @@ $insertGoodsData = array(
     'goodsArea' => mysqli_real_escape_string($conn, $_POST['goodsArea']),
     'goodsPrice' => mysqli_real_escape_string($conn, $_POST['goodsPrice']),
     'goodsContent' => mysqli_real_escape_string($conn, $_POST['goodsContent']),
-    'goodsFile' => $_FILES['goodsFile']['tmp_name']
+    'goodsCprice' => mysqli_real_escape_string($conn, $_POST['goodsPrice'] * 0.1)
 );
 
 
@@ -42,7 +42,8 @@ $sql = "
             goods_area,
             goods_content,
             goods_createdate,
-            goods_updatedate
+            goods_updatedate,
+            goods_cprice
             )
         VALUES
             (
@@ -53,16 +54,31 @@ $sql = "
             '{$insertGoodsData['goodsArea']}',
             '{$insertGoodsData['goodsContent']}',
             NOW(),
-            NOW()
+            NOW(),
+            {$insertGoodsData['goodsCprice']}
             )
-";
-/* mysqli_query($conn, $sql);
+";     
+mysqli_query($conn, $sql);
 $goodsId = mysqli_insert_id($conn);
 
-$path = "../upload/".basename($_FILES['goodsFile']['name']);
-move_uploaded_file($insertGoodsData['goodsFile'], $path);
-
-$sql = "
+if(isset($_FILES['goodsFile']) && $_FILES['goodsFile']['size'] != 0) {
+    $baseDownFolder = "../upload";
+    
+    // 실제 파일명
+    $real_filename = $_FILES['goodsFile']['name'];
+    
+    // 파일 확장자 체크
+    $nameArr = explode(".",  $real_filename);
+    $extension = $nameArr[sizeof($nameArr) - 1];
+    
+    // 임시 파일명 (현재시간_랜덤수.파일 확장자) - 파일명 중복될 경우를 대비해 임시파일명을 덧붙여 저장하려함
+    $tmp_filename = time() . '_' . mt_rand(0,99999) . '.' . strtolower($extension);
+    
+    if(!move_uploaded_file($_FILES["goodsFile"]["tmp_name"], $baseDownFolder.$tmp_filename) ) {
+        echo 'image upload error';
+    }
+    
+    $sql = "
             INSERT INTO
                 goods_file
                 (
@@ -77,28 +93,34 @@ $sql = "
                     (
                     NULL,
                     {$goodsId},
-                    '{$insertGoodsData['goodsFile']}',
-                    '{$insertGoodsData['goodsFile']}',
+                    '{$real_filename}',
+                    '{$tmp_filename}',
                     NOW(),
                     NOW()
                     )
-        "; */
-            
-if(!mysqli_query($conn, $sql)){
-    $errorMsg = "SQL実行に失敗しました。";
-    $path = "index";
-    header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
-    exit;
+        ";
+                    
+                    if(!mysqli_query($conn, $sql)){
+                        $errorMsg = "SQL実行に失敗しました。";
+                        $path = "index";
+                        header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
+                        exit;
+                    }
 }
+
+
 $sql = "
         SELECT
-            *
+            goods.*, goods_file.goods_filerealname
             FROM
                 goods
+            LEFT JOIN
+                goods_file
+                ON goods.goods_no = goods_file.goods_no
             WHERE
-                goods_check = '0'
+                goods.goods_check = '0'
             ORDER BY
-                goods_updatedate DESC;
+                goods.goods_updatedate DESC;
         ";
 $result = mysqli_query($conn, $sql);
 $data = array();

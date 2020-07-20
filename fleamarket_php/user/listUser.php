@@ -22,7 +22,18 @@ $sql = "
         SELECT
             a.*, count(b.user_likecount) AS user_likecount, count(b.user_hatecount) AS user_hatecount
             FROM
-                userinfo a
+                (
+                SELECT  
+                    userinfo.*, 
+                    COUNT(goods.goods_no) AS goodsCount 
+                        FROM 
+                            userinfo 
+                            LEFT JOIN 
+                                goods 
+                                ON 
+                                userinfo.user_no = goods.user_no 
+                                GROUP BY userinfo.user_no
+                ) a
 			LEFT JOIN
 				like_hate_count b
                 ON 
@@ -79,10 +90,10 @@ $result = mysqli_query($conn, $sql);
                     while($data = mysqli_fetch_assoc($result)){
             ?>
             <tr>
-            	<td style="text-align:center"><a href="javascript:void(0);" onclick="userDetailModal('<?=$data['user_no'] ?>')" ><?=$data['user_id']?></a></td>
-                <td style="text-align:center"><?=$data['user_name']?></td>
+            	<td style="text-align:center"><a href="javascript:void(0);" onclick="userDetailModal('<?=$data['user_no'] ?>')" ><span class="text-primary"><?=$data['user_id']?></span></a></td>
                 <td style="text-align:center"><?=$data['user_likecount'] ?></td>
                 <td style="text-align:center"><?=$data['user_hatecount'] ?></td>
+                <td style="text-align:center" class="text-primary"><a href="javascript:void(0);" onclick="userGoodsCountCheck('<?=$data['user_no'] ?>')"><span class="text-primary"><?=$data['goodsCount'] ?></span></a></td>
                 <td style="text-align:center"><?=$data['user_createdate']?></td>
                 <td style="text-align:center"><?php $data['user_deletecheck'] == '0' ? print "会員" : print "非会員"?></td>
             </tr>
@@ -98,7 +109,7 @@ $result = mysqli_query($conn, $sql);
 
 
 
-    <!-- 詳細情報変更MODAL -->
+    <!-- 詳細情報MODAL -->
 	<div class="modal" id="detailUserModal">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
@@ -118,7 +129,7 @@ $result = mysqli_query($conn, $sql);
                     	<table class="table form-group">
                         	<tr>
                         		<td>ID：</td>
-                        		<td id="detailUserIdModal"></td>
+                        		<td id="detailUserIdModal" ></td>
                         		<td>いいね：<span id="detailUserLikeCountModal"></span></td>
                         		<td>悪い：<span id=detailUserHateCountModal></span></td>
                     		</tr>
@@ -154,6 +165,27 @@ $result = mysqli_query($conn, $sql);
 		</div>
 	</div>
 	
+	
+	<!-- 出品数のModal -->
+	<div class="modal" id="userGoodsCountCheckModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title" id="userGoodsCountCheckUserId"></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+            		<div id="userGoodsCountCheckList"></div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+               		<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+			</div>
+		</div>
+	</div>
 <script src="../btjs/jquery.min.js"></script>
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>

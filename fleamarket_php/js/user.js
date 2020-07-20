@@ -413,7 +413,7 @@ function userDetailModal(userNo){
 	
 	$.ajax({
 		type : "POST",
-		url : "./detailUserModal.php",
+		url : "../user/detailUserModal.php",
 		data : {userNo : userNo},
 		success : function(result){
 			$('#detailUserIdModal').html(result['result']['user_id']);
@@ -438,6 +438,53 @@ function userDetailModal(userNo){
 	});
 }
 
+/**
+ * ユーザーが登録した出品項目
+ * @param userNo
+ * @returns
+ */
+function userGoodsCountCheck(userNo){
+	$.ajax({
+		type : 'POST',
+		url : './userGoodsCountCheckAjax.php',
+		data : {userNo : userNo},
+		success : function(result){
+			if(result == '9') {
+				alert('情報がありません。');
+				return false;
+			}
+			$('#userGoodsCountCheckList').html('');
+			$('#userGoodsCountCheckUserId').html(result['result'][0].user_id+"様の出品項目");
+			
+			var goodsOnSale = "<span class='text-primary'>販売中</span>";
+			
+			for(var i = 0; i < result['result'].length; i++){
+				if(result['result'][i].goods_onsale == '1'){
+					goodsOnSale = "<span class='text-danger'>販売完了</span>";
+				}
+				$('#userGoodsCountCheckList').append(
+						'<hr>'+
+						'<div style="display: flex;flex-direction: row">' +
+						'<div style="margin: 2px; padding: 5px; flex: 0 1 10%;" id="listImg">' +
+						'<img src="../img/123.jpg" style="max-height: 74px; max-width: 74px">' +
+						'</div>'+
+						'<div style="margin: 2px; padding: 5px; flex: 0 1 70%;">' +
+						'<h5 style="margin:0" class="text-dark font-weight-bold"><a href="../goods/goodsDetail.php?goods_no='+result['result'][i].goods_no+'">'+ result['result'][i].goods_title +'</a></h5>' +
+						'<p style="margin-bottom:10px"><span class="text-dark font-weight-bold">' + result['result'][i].goods_price + '</span></p>' +
+						'<p style="margin:0"><span class="text-dark">' + result['result'][i].goods_content + '</span></p>' +
+						'</div>' +
+						'<div style="margin: 2px; padding: 5px; flex: 0 1 20%;">' +
+						'<p style="margin:0">'+goodsOnSale+'</p>' +
+						'</div>' +
+						'</div>' 
+						);
+			}
+			$('#userGoodsCountCheckModal').modal('show');
+			
+		}
+	});
+	
+}
 
 /**
  * いいねボタン押すといいね表示される
@@ -487,3 +534,4 @@ function userHateCountButton(userNo){
 		}
 	});
 }
+

@@ -17,8 +17,7 @@
     		<div class="collapse navbar-collapse" id="navbarSupportedContent">
     			<ul class="navbar-nav mr-auto">
     				<li class="nav-item"><a class="nav-link" href="http://localhost:8712/fleamarket_php/goods/goodsList.php">商品</a></li>
-    				<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-    				<li class="nav-item"><a class="nav-link" href="#">Disabled</a></li>
+    				<li class="nav-item"><a class="nav-link" href="http://localhost:8712/fleamarket_php/sales/salesList.php">売り上げ</a></li>
     				<li class="nav-item"><a class="nav-link" href="http://localhost:8712/fleamarket_php/user/listUser.php">ユーザー管理</a></li>
     				<li class="nav-item"><a class="nav-link" href="http://localhost:8712/fleamarket_php/inquiry/listInquiry.php">お問い合わせ</a></li>
     			</ul>
