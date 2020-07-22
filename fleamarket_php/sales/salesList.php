@@ -6,14 +6,13 @@ if(!isset($_SESSION['userInfo'])){
     header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
     exit;
 }
-
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>フリマシステム</title>
+<title>売り上げ|フリマシステム</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 <link href="../btcss/bootstrap.min.css" rel="stylesheet">
@@ -166,11 +165,15 @@ function salesList(){
 			}
 			var total = 0;
 			for(var i = 0; i < result['result'].length; i++){
-				var img = "../img/123.jpg";
+				var img = '<img src=\'../upload/'+result['result'][i].goods_filerealname+'\' style="max-height: 74px; max-width: 74px">'
+				if(result['result'][i].goods_filerealname == null){
+					img = '<img src="../img/noImg.jpg" style="max-height: 74px; max-width: 74px">'
+				}
+				
 				total += Number(result['result'][i].goods_cprice);
 				$('#salesListTable').append(
 						'<tr>' +
-						'<td><img src=\''+img+'\' style="max-height: 74px; max-width: 74px"></td>' +
+						'<td>'+img+'</td>' +
 						'<td><a href=\'javascript:void(0);\' onclick=\'userDetailModal('+result['result'][i].user_no+')\'>'+result['result'][i].user_id+'</a></td>' +
 						'<td>'+result['result'][i].goods_area+'</td>' +
 						'<td>'+result['result'][i].goods_price+'円</td>' +

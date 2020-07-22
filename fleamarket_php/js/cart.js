@@ -73,11 +73,16 @@ function buyInserCheck(){
 		success : function(result){
 			$('#cartBuyCheckList').html('');
 			for(var i = 0; i < result['result'].length; i++){
+				var img = '<img src=\'../upload/'+result['result'][i].goods_filerealname+'\' style="max-height: 74px; max-width: 74px">'
+				if(result['result'][i].goods_filerealname == null){
+					img = '<img src="../img/noImg.jpg" style="max-height: 74px; max-width: 74px">'
+				}
+			
 				$('#cartBuyCheckList').append(
 						'<hr>'+
 						'<div style="display: flex;flex-direction: row">' +
 						'<div style="margin: 2px; padding: 5px; flex: 0 1 10%;" id="listImg">' +
-						'<img src="../img/123.jpg" style="max-height: 74px; max-width: 74px">' +
+						img +
 						'</div>'+
 						'<div style="margin: 2px; padding: 5px; flex: 0 1 70%;">' +
 						'<h5 style="margin:0" class="text-dark font-weight-bold"><a href="../goods/goodsDetail.php?goods_no='+result['result'][i].goods_no+'">'+ result['result'][i].goods_title +'</a></h5>' +
@@ -119,3 +124,5 @@ function goodsBuy(){
 		}
 	});
 }
+
+

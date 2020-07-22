@@ -5,7 +5,6 @@ $conn = mysqli_connect(
     '123456',
     'fleamarket'
     );
-
 /**
  * DB接続チェックする
  */
@@ -18,13 +17,17 @@ if(mysqli_connect_errno()){
 
 $sql = "
         SELECT 
-            cart.cart_no, cart.user_no, cart.cart_createdate, goods.*
+            cart.cart_no, cart.user_no, cart.cart_createdate, goods.*, goods_file.goods_filerealname
             FROM
                 cart
             INNER JOIN
                 goods
             ON
                 cart.goods_no = goods.goods_no
+            LEFT JOIN
+                goods_file
+            ON
+                goods.goods_no = goods_file.goods_no
             WHERE 
                 cart.user_no = {$_SESSION['userInfo']['user_no']}
         ";
@@ -37,7 +40,7 @@ $result = mysqli_query($conn, $sql);
 <html>
 <head>
 <meta charset="UTF-8">
-<title>フリマシステム</title>
+<title>カートリスト|フリマシステム</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 <link href="../btcss/bootstrap.min.css" rel="stylesheet">
@@ -59,10 +62,6 @@ $result = mysqli_query($conn, $sql);
 		<div style="clear:both"></div>
 		<div style="float:right;" class="form-inline" >
 			<br>
-			<div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="defaultChecked">
-                <label class="custom-control-label text-dark font-weight-bold" for="defaultChecked">전체선택</label>
-            </div>
             <p style="margin:0; "><button type="button" class="btn btn-primary btn-sm " onclick="buyInserCheck();">購入</button></p>
 		</div>
 		<div style="clear:both"></div>
@@ -75,7 +74,11 @@ $result = mysqli_query($conn, $sql);
 			<hr>
 			<div style="display: flex;flex-direction: row">
     			<div style="margin: 2px; padding: 5px; flex: 0 1 10%;">
-    				<img src="../img/123.jpg" style="max-height: 74px; max-width: 74px">
+    				<?php if(isset($row['goods_filerealname'])){ ?>
+    					<img src="../upload/<?=$row['goods_filerealname'] ?>" style="max-height: 74px; max-width: 74px">
+    				<?php }else{?>
+    					<img src="../upload/noImg.jpg" style="max-height: 74px; max-width: 74px">
+    				<?php }?>
     			</div>
     			<div style="margin: 2px; padding: 5px; flex: 0 1 60%;">
         			<h5 style="margin:0" class="text-dark font-weight-bold"><a href="../goods/goodsDetail.php?goods_no=<?=$row['goods_no'] ?>"><?=$row['goods_title'] ?></a></h5>

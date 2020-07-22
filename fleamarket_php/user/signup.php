@@ -35,12 +35,13 @@ if(isset($_POST['insertUser'])){
         'userMailCheck' => mt_rand(100000, 999999)
     );
     
+    #ID, EMAILチェック
     $sql = "
         SELECT * 
             FROM userinfo
             WHERE 
-                user_id = '{$singupData['userId']}'
-                AND user_email = '{$singupData['userEmail']}'
+                (user_id = '{$singupData['userId']}'
+                OR user_email = '{$singupData['userEmail']}')
                 AND user_deletecheck = '0' 
         ";
     
@@ -158,7 +159,7 @@ if(isset($_POST['insertUser'])){
     		
     	<div class="col-lg-4">
     		<h3 style="text-align:center; margin-top:20px;">会員登録</h3>
-    		<form class="form-group" action="./signup.php" method="post" onsubmit="return emptyCheck()">
+    		<form class="form-group" action="./signup.php" method="post" onsubmit="return signupCheck()">
 				<div class="md-form form-sm form-inline" style="margin:0">
 					<input class="form-control form-control-sm col-sm-8" type="text" id="userId" name="userId" value="">&nbsp;
 					<label for="userId">IDを入力してください。</label>
@@ -234,8 +235,5 @@ if(isset($_POST['insertUser'])){
 <script src="../btjs/bootstrap.min.js"></script>
 <script src="../btjs/mdb.min.js"></script>
 <script src="../js/user.js"></script>
-
-
-
 </body>
 </html>

@@ -182,7 +182,7 @@ if (mysqli_num_rows($result) > 0) {
         
                     <!-- Modal footer -->
                     <div class="modal-footer">
-                    	<button type="button" class="btn btn-primary" onclick="return isDetailUserUpdate();">変更</button>
+                    	<button type="button" class="btn btn-primary" onclick="isDetailUserUpdate();">変更</button>
                    		<button type="button" class="btn btn-danger detailUserUpdateModalClose" data-dismiss="modal">取消</button>
                     </div>
 				</form>	
@@ -201,7 +201,7 @@ if (mysqli_num_rows($result) > 0) {
                     <!-- Modal Header -->
                     <div class="modal-header">
                         <h4 class="modal-title">パスワード変更</h4>
-                        <button type="button" class="close passwordUpdateModalClose" data-dismiss="modal">&times;</button>
+                        <button type="button" class="close ModalClose" data-dismiss="modal">&times;</button>
                     </div>
                     
                     <!-- Modal body -->
@@ -210,10 +210,10 @@ if (mysqli_num_rows($result) > 0) {
                    			元パスワード：&nbsp;<input type="password" id="oldPassword" name="oldPassword" class="form-control">
                    		</div>
                    		<div class="form-inline" style="margin-bottom: 10px;">
-                   			新パスワード：&nbsp;<input type="password" id="newPassword1" name="newPassword1" class="form-control">
+                   			新パスワード：&nbsp;<input type="password" id="userPassword" name="userPassword" class="form-control">
                    		</div>
                    		<div class="form-inline" style="margin-bottom: 10px;">
-                   			新パスワード(確認)：&nbsp;<input type="password" id="newPassword2" name="newPassword2" class="form-control">
+                   			新パスワード(確認)：&nbsp;<input type="password" id="userPasswordCheck" name="userPasswordCheck" class="form-control">
                    		</div>
                    		<span id="passwordCheckResult" ></span>
                     </div>
@@ -221,19 +221,17 @@ if (mysqli_num_rows($result) > 0) {
                     <!-- Modal footer -->
                     <div class="modal-footer">
                     	<button type="submit" class="btn btn-primary">変更</button>
-                   		<button type="button" class="btn btn-danger passwordUpdateModalClose" data-dismiss="modal">取消</button>
+                   		<button type="button" class="btn btn-danger ModalClose" data-dismiss="modal">取消</button>
                     </div>
 				</form>	
 			</div>
 		</div>
 	</div>
 	
-	<!-- パスワード変更MODAL -->
+	<!-- 脱退MODAL -->
 	<div class="modal" id="deleteUser">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form action="./deleteUser.php" method="post" onsubmit="return deleteUser()">
-					<input type="hidden" id="userNo" name="userNo" value="<?=$data['user_no'] ?>">
                     <!-- Modal Header -->
                     <div class="modal-header">
                         <h4 class="modal-title">会員脱退</h4>
@@ -246,16 +244,16 @@ if (mysqli_num_rows($result) > 0) {
                     		<h6 class="text-danger">本当に脱退しますか？<small>(パスワードを入力してください。)</small></h6>
                     	</div>
                    		<div class="form-inline" style="margin-bottom: 10px;">
-                   			パスワード確認：&nbsp;<input type="password" id="userPassword" name="userPassword" class="form-control">
+                   			パスワード確認：&nbsp;<input type="password" id="userDeletePassword" name="userDeletePassword" class="form-control">
                    		</div>
                     </div>
         
                     <!-- Modal footer -->
                     <div class="modal-footer">
-                    	<button type="submit" class="btn btn-primary">脱退</button>
+                    	<button type="button" class="btn btn-primary" onclick="deleteUserFunction(<?=$data['user_no'] ?>);">脱退</button>
                    		<button type="button" class="btn btn-danger passwordUpdateModalClose" data-dismiss="modal">取消</button>
                     </div>
-				</form>	
+				
 			</div>
 		</div>
 	</div>

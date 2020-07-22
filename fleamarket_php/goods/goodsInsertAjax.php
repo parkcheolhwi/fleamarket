@@ -62,16 +62,16 @@ mysqli_query($conn, $sql);
 $goodsId = mysqli_insert_id($conn);
 
 if(isset($_FILES['goodsFile']) && $_FILES['goodsFile']['size'] != 0) {
-    $baseDownFolder = "../upload";
-    
-    // 실제 파일명
+      /* $baseDownFolder = "../upload/"; */
+      $baseDownFolder = "D:\\PHP\\fleamarket_parkcheolhwi\\upload\\";   
+    // 実際のファイル名
     $real_filename = $_FILES['goodsFile']['name'];
     
-    // 파일 확장자 체크
+    // 拡張子のチェック
     $nameArr = explode(".",  $real_filename);
     $extension = $nameArr[sizeof($nameArr) - 1];
     
-    // 임시 파일명 (현재시간_랜덤수.파일 확장자) - 파일명 중복될 경우를 대비해 임시파일명을 덧붙여 저장하려함
+    // アップロードされつファイル名
     $tmp_filename = time() . '_' . mt_rand(0,99999) . '.' . strtolower($extension);
     
     if(!move_uploaded_file($_FILES["goodsFile"]["tmp_name"], $baseDownFolder.$tmp_filename) ) {
@@ -100,12 +100,12 @@ if(isset($_FILES['goodsFile']) && $_FILES['goodsFile']['size'] != 0) {
                     )
         ";
                     
-                    if(!mysqli_query($conn, $sql)){
-                        $errorMsg = "SQL実行に失敗しました。";
-                        $path = "index";
-                        header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
-                        exit;
-                    }
+        if(!mysqli_query($conn, $sql)){
+            $errorMsg = "SQL実行に失敗しました。";
+            $path = "index";
+            header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
+            exit;
+        }
 }
 
 
@@ -122,6 +122,7 @@ $sql = "
             ORDER BY
                 goods.goods_updatedate DESC;
         ";
+
 $result = mysqli_query($conn, $sql);
 $data = array();
 if(mysqli_num_rows($result) > 0){
@@ -131,6 +132,7 @@ if(mysqli_num_rows($result) > 0){
 }
 mysqli_free_result($result);
 mysqli_close($conn);
+
 header('Content-Type: application/json; charset=utf8');
 $jsonData = json_encode(array("result"=>$data), JSON_PRETTY_PRINT+JSON_UNESCAPED_UNICODE);
 echo $jsonData;

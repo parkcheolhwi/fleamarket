@@ -5,7 +5,7 @@ session_start();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>フリマシステム</title>
+<title>商品リスト|フリマシステム</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 <link href="../btcss/bootstrap.min.css" rel="stylesheet">
@@ -83,19 +83,20 @@ li {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="goodsContent">Content</label>
+                            <label for="goodsContent">商品紹介</label>
                             <textarea class="form-control" id="goodsContent" name="goodsContent" rows="5"></textarea>
                         </div>
                         <div class="input-group">
-                            <div class="input-group-prepend">
-                           		<span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
-                            </div>
                             <div class="custom-file">
                                 <input type="file" class="custom-file-input" id="goodsFile" name="goodsFile" aria-describedby="inputGroupFileAddon01">
-                                <label class="custom-file-label" for="goodsFile">Choose file</label>
+                                <label class="custom-file-label" for="goodsFile">ファイルを選択してください。</label>
                             </div>
-                            <button type="button" class="btn btn-primary" style="margin: 0 0 0 10px;">ファイル追加</button>
+                            <button type="button" class="btn btn-primary" style="margin: 0 0 0 10px;" onclick="addInput()">ファイル追加</button>
                         </div>
+                        <div id="fileInputMenu">
+                            <div class="input-group"></div>
+                        </div>
+                        
                     </div>
         
                     <!-- Modal footer -->
@@ -118,6 +119,16 @@ li {
 $(document).ready(function(){
 	goodsAllList();
 });
+
+/* var i = 0;
+function addInput(){
+	i++;
+	var inputtag =  '<div class="custom-file">' +
+    				'<input type="file" class="custom-file-input" id="goodsFile" name="goodsFile'+ i +'" aria-describedby="inputGroupFileAddon01">' +
+    				'<label class="custom-file-label" for="goodsFile">ファイルを選択してください。</label>' +
+					'</div>';
+	$("#fileInputMenu").append(inputtag);
+} */
 </script>
 </body>
 </html>

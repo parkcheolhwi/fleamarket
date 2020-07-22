@@ -1,4 +1,4 @@
-<?php 
+ <?php 
 /**
  * 商品詳細でコメントしてリストを表示する
  * @var unknown $conn
@@ -21,6 +21,64 @@ if(mysqli_connect_errno()){
 }
 
 $goodsCommentData = array(
+    'goodsNo' => mysqli_real_escape_string($conn, $_POST['goodsNo']),
+    'goodsCommentContent' => mysqli_real_escape_string($conn, $_POST['goodsCommentContent']),
+    'userNo' => mysqli_real_escape_string($conn, $_POST['userNo'])
+);
+if(empty($goodsCommentData['goodsCommentContent']) || $goodsCommentData['goodsCommentContent'] ==''){
+    return;
+} else{
+    $sql = "
+        INSERT INTO
+            goods_comment
+                (
+                goods_no,
+                goods_comment_no,
+                user_no,
+                goods_comment_content,
+                goods_comment_createdate
+                )
+            VALUES
+                (
+                {$goodsCommentData['goodsNo']},
+                NULL,
+                {$goodsCommentData['userNo']},
+                '{$goodsCommentData['goodsCommentContent']}',
+                NOW()
+                )
+        ";
+    mysqli_query($conn, $sql);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* $goodsCommentData = array(
     'goodsNo' => mysqli_real_escape_string($conn, $_POST['goodsNo']),
     'goodsCommentContent' => mysqli_real_escape_string($conn, $_POST['goodsCommentContent']),
     'userNo' => mysqli_real_escape_string($conn, $_POST['userNo'])
@@ -123,7 +181,7 @@ if(empty($goodsCommentData['goodsCommentContent']) || $goodsCommentData['goodsCo
             
         }
 }
+ */
 
 
-
-?>
+?> 

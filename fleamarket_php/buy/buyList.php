@@ -38,13 +38,18 @@ $sql = "
             goods.goods_no,
             goods.goods_title, 
             goods.goods_price, 
-            goods.goods_content 
+            goods.goods_content,
+            goods_file.goods_filerealname
             FROM 
                 buy 
                 INNER JOIN 
                     goods 
                 ON 
                     buy.goods_no = goods.goods_no
+                LEFT JOIN
+                    goods_file
+                    ON 
+                        goods.goods_no = goods_file.goods_no
             WHERE buy.user_no = {$_SESSION['userInfo']['user_no']}
         ";
 
@@ -54,7 +59,7 @@ $result = mysqli_query($conn, $sql);
 <html>
 <head>
 <meta charset="UTF-8">
-<title>フリマシステム</title>
+<title>購入リスト|フリマシステム</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 <link href="../btcss/bootstrap.min.css" rel="stylesheet">
@@ -82,7 +87,7 @@ $result = mysqli_query($conn, $sql);
 			<hr>
 			<div style="display: flex;flex-direction: row">
     			<div style="margin: 2px; padding: 5px; flex: 0 1 10%;">
-    				<img src="../img/123.jpg" style="max-height: 74px; max-width: 74px">
+    				<img src="../upload/<?php $row['goods_filerealname'] == null ? print "noImg.jpg" : print $row['goods_filerealname'] ?>" style="max-height: 74px; max-width: 74px">
     			</div>
     			<div style="margin: 2px; padding: 5px; flex: 0 1 60%;">
         			<h5 style="margin:0" class="text-dark font-weight-bold"><a href="../goods/goodsDetail.php?goods_no=<?=$row['goods_no'] ?>"><?=$row['goods_title'] ?></a></h5>

@@ -14,41 +14,64 @@
 <link href="../css/user.css" rel="stylesheet">
 <script>
 
-
-function chatBox(){
+function chatList(userId){
+	$.ajax({
+		type : 'post',
+		url : './chatDetail.php',
+		data : {user_id : userId},
+		success : function(result){
+			chatContentList(userId);
+			$('#chatListForm').show();
+		}
+	}); 
+}
+function chatBox(toID){
 	var fromID = '<?= $_SESSION['userInfo']['user_id']?>';
 	$.ajax({
 		type : 'POST',
 		url : './chatBoxAjax.php',
 		data : {fromID : fromID},
 		success : function(result){
+			var chatList = "";
 			for(var i = 0; i < result['result'].length; i++){
-				$('.inbox_chat').append(
-						'<a href="./chatDetail.php?user_id='+result['result'][i].fromID+'">'+
-						'<div class="chat_list">' +
-						'<div class="chat_people">' +
-						'<div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"></div>' +
-						'<div class="chat_ib">' +
-						'<h5>'+result['result'][i].fromID+' <span class="chat_date">'+result['result'][i].chatTime+'</span></h5>' +
-						'<p>'+result['result'][i].chatContent+'</p>' +
-						'</div>' +
-						'</div>' +
-						'</div>' +
-						'</a>' 
-						);
+				var userId = result['result'][i].fromID;
+				if(userId == fromID) {
+					userId = result['result'][i].toID;
+				}
+				chatList = chatList + '<div id=\''+userId+'\'>' + 
+                            				'<a href="javascript:void(0);" onclick="chatList(\''+userId+'\')">'+
+                            				'<div class="chat_list">' +
+                            					'<div class="chat_people">' +
+                            						'<div class="chat_img"><img src="../img/123.jfif" alt="sunil"></div>' +
+                            						'<div class="chat_ib">' +
+                            							'<h5>'+userId+' <span class="chat_date" id="'+userId+'ChatDate">'+result['result'][i].chatTime+'</span></h5>' +
+                            							'<p id="'+userId+'ChatContent">'+result['result'][i].chatContent+'</p>' +
+                            						'</div>' +
+                            					'</div>' +
+                            				'</div>' +
+                            				'</a>' +
+                            			'</div>';
 			}
-			chatContentList();
+			$('.inbox_chat').html(chatList);
+			$('.active_chat').removeClass('active_chat');
+			$('#'+toID+'').toggleClass('active_chat');
 		}
 	});
 	
 }
 
-
 /* チャット内容を登録する */
- function chatSubmit(){
+ function chatSubmit(){	 
 		var fromID = '<?= $_SESSION['userInfo']['user_id']?>'; 
-		var toID = '<?php isset($_GET['user_id']) ? print $_GET['user_id'] : print "" ?>';
+		var toID = $('#user_id').val();
 		var chatContent = $('#chatContent').val();
+
+		if(chatContent == ''){
+			alert('内容を入力してください。');
+			$('#chatContent').focus();
+			return false;
+		}
+		
 		$.ajax({
 			type : 'POST',
 			url : './chatContentCreateAjax.php',
@@ -83,20 +106,23 @@ function chatBox(){
 							'</div>'
 							);
 				}
-			
+				
 				$('.msg_history').scrollTop($('.msg_history')[0].scrollHeight);
+				chatBox(result['result'].toID);
 			}
 		});
 		$('#chatContent').val('');
 	}
 
 /* チャットリスト */
-
- function chatContentList(){
+ function chatContentList(userId){
+	 	$('.active_chat').removeClass('active_chat');
+		$('#'+userId+'').toggleClass('active_chat');
 		$('.msg_history').html('');
+		
 		var fromID = '<?= $_SESSION['userInfo']['user_id']?>'; 
-		var toID = '<?php isset($_GET['user_id']) ? print $_GET['user_id'] : print "" ?>';
-
+		var toID = userId;
+		
 		$.ajax({
 			type : 'POST',
 			url : './chatContentListAjax.php',
@@ -106,11 +132,16 @@ function chatBox(){
 			},
 			success : function(result){
 				
+				if(result['result'][0].fromID == fromID){
+					$('.msg_history').append('<input type="hidden" name="user_id" id="user_id" value=\''+result['result'][0].toID+'\'>');
+				}else{
+					$('.msg_history').append('<input type="hidden" name="user_id" id="user_id" value=\''+result['result'][0].fromID+'\'>');
+				}
 				
-				for(var i = 0; i < result['result'].length; i++){
+				for(var i = 1; i < result['result'].length; i++){
 					if(result['result'][i].fromID == fromID){
 						$('.msg_history').append(
-								'<div class="outgoing_msg"></div>' +
+								'<div class="outgoing_msg"></div>' +	
 								'<div class="sent_msg" style="width:51%;">' +
 								'<p>'+result['result'][i].chatContent+'</p>' +
 								'<span class="time_date">'+result['result'][i].chatTime+'</span>' +
@@ -142,6 +173,7 @@ function chatBox(){
 		
 		}); 
 }
+
 
 </script>
 </head>
@@ -175,20 +207,22 @@ function chatBox(){
 					<div class="inbox_chat"></div>
 				</div>
 				<!-- メッセージ内容 -->	
-				<?php if(isset($_GET['user_id'])) {?>
-				<div class="mesgs">
-					<div class="msg_history"></div>
+				<form onsubmit="chatSubmit(); return false;" id="chatListForm" style="display:none;">
+    				
 					
-					<div class="type_msg">
-						<div class="input_msg_write">
-							<form onsubmit="chatSubmit(); return false;">
+    				<div class="mesgs">
+    					<div class="msg_history"></div>
+    					
+    					<div class="type_msg">
+    						<div class="input_msg_write">
+    							
     							<input type="text" class="write_msg" placeholder="Type a message" name="chatContent" id="chatContent" />
     							<button class="msg_send_btn" type="submit"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
-							</form>
-						</div>
-					</div>
-				</div>
-				<?php }?>
+    							
+    						</div>
+    					</div>
+    				</div>
+				</form>
 			</div>
 		</div>
 
@@ -203,6 +237,24 @@ function chatBox(){
 	/* 最近メッセージリストを表示します。 */
 	 $(document).ready(function(){
 		chatBox();
+		<?php if(isset($_POST['user_id'])){?>
+		$.ajax({
+			type : 'POST',
+			url : './createAjax.php',
+			data : {
+				toID :'<?=$_POST['user_id'] ?>',
+				fromID : '<?=$_SESSION['userInfo']['user_id']?>' 
+			},
+			success : function(result){
+				
+				chatBox();
+					
+				chatList('<?=$_POST['user_id'] ?>');
+				
+				$('#chatListForm').show();
+			}
+		});
+		<?php }?>
 	}); 
 
 

@@ -19,9 +19,7 @@ function connection($sql){
     return $result;
     
     } else {
-        $errorMsg = "DB接続に失敗しました。";
-        $path = "./index.php";
-        header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
+        return "9";
     }
 }
 

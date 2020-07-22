@@ -25,8 +25,8 @@
     $passwordUpdateData = array(
         'userNo' => mysqli_real_escape_string($conn, $_POST['userNo']),
         'oldPassword' => mysqli_real_escape_string($conn, $_POST['oldPassword']),
-        'newPassword1' => mysqli_real_escape_string($conn, $_POST['newPassword1']),
-        'newPassword2' => mysqli_real_escape_string($conn, $_POST['newPassword2'])
+        'newPassword1' => mysqli_real_escape_string($conn, $_POST['userPassword']),
+        'newPassword2' => mysqli_real_escape_string($conn, $_POST['userPasswordCheck'])
     );
     
     /**

@@ -1,55 +1,158 @@
+
+var inputDataCheck = new function(){
+	this.userId = function(userId){
+		if(userId == ''){
+			alert('IDを入力してください。');
+			$('#userId').focus();
+			return false;
+		}
+		if(!/^[a-zA-Z0-9]{8,16}$/.test(userId)){
+			alert('8~16桁の数字と英語だけ使えます。');
+			$('#userId').val('');
+			$('#userId').focus();
+			return false;
+		}
+		return true;
+	}
+	
+	this.oldPassword = function(oldPassword){
+		if(oldPassword == ''){
+			alert('旧パスワードを入力してください。');
+			$('#oldPassword').focus();
+			return false;
+		}
+		if(!/^[a-zA-Z0-9]{8,16}$/.test(oldPassword)){
+			alert('8~16桁の数字と英語だけ使えます。');
+			$('#oldPassword').val('');
+			$('#oldPassword').focus();
+			return false;
+		}
+		return true;
+	}
+	
+	this.userDeletePassword = function(userDeletePassword){
+		if(userDeletePassword == ''){
+			alert('パスワードを入力してください。');
+			$('#userDeletePassword').focus();
+			return false;
+		}
+		if(!/^[a-zA-Z0-9]{8,16}$/.test(userDeletePassword)){
+			alert('8~16桁の数字と英語だけ使えます。');
+			$('#userDeletePassword').val('');
+			$('#userDeletePassword').focus();
+			return false;
+		}
+		return true;
+	}
+	
+	this.userPassword = function(userPassword){
+		if(userPassword == ''){
+			alert('パスワードを入力してください。');
+			$('#userPassword').focus();
+			return false;
+		}
+		if(!/^[a-zA-Z0-9]{8,16}$/.test(userPassword)){
+			alert('8~16桁の数字と英語だけ使えます。');
+			$('#userPassword').val('');
+			$('#userPassword').focus();
+			return false;
+		}
+		return true;
+	}
+	
+	this.userPasswordCheck = function(userPasswordCheck){
+		if(userPasswordCheck == ''){
+			alert('パスワードを入力してください。');
+			$('#userPasswordCheck').focus();
+			return false;
+		}
+		if(!/^[a-zA-Z0-9]{8,16}$/.test(userPasswordCheck)){
+			alert('8~16桁の数字と英語だけ使えます。');
+			$('#userPasswordCheck').val('');
+			$('#userPasswordCheck').focus();
+			return false;
+		}
+		return true;
+	}
+	
+	this.userName = function(userName){
+		if(userName == ''){
+			alert('名前を入力してください。');
+			$('#userName').focus();
+			return false;
+		}
+		return true;
+	}
+	
+	this.userBirth = function(year, month, day){
+		if(year == '' || month == '' || day == ''){
+			alert('生年月日を入力してください。');
+			$('#year').focus();
+			return false;
+		}
+		return true;
+	}
+	
+	this.userPhoneNumber = function(userPhoneNumber){
+		if(userPhoneNumber == ''){
+			alert('電話番号を入力してください。');
+			$('#userPhoneNumber').focus();
+			return false;
+		}
+		return true;
+	}
+	
+	this.userEmail = function(userEmail){
+		if(userEmail == ''){
+			alert('E-メールを入力してください。');
+			$('#userEmail').focus();
+			return false;
+		}
+		if(!/^([0-9a-zA-Z_\.-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/.test(userEmail)){
+			alert('E-メール形式が間違っています。');
+			$('#userEmail').val('');
+			$('#userEmail').focus();
+			return false;
+		}
+		
+		return true;
+	}
+	
+	this.userZipCode = function(userZipCode){
+		if(userZipCode == ''){
+			alert('郵便番号を入力してください。');
+			$('#userZipCode').focus();
+			return false;
+		}
+		return true;
+	}
+	
+	this.userAddress1 = function(userAddress1){
+		if(userAddress1 == ''){
+			alert('住所を入力してください。');
+			$('#userAddress1').focus();
+			return false;
+		}
+		return true;
+	}
+}
+
 var userIdCheckResult = 0;
 var userEmailCheckResult = 0;
 /**
  * 空のデータをチェックする
  * @returns
  */
-function emptyCheck() {
-	if($('#userId').val() == ''){
-		alert('IDを入力してください。');
-		$('#userId').focus();
-		return false;
-	}
-	if($('#userPassword').val() == ''){
-		alert('パスワードを入力してください。');
-		$('#userPassword').focus();
-		return false;
-	}
-	if($('#userPasswordCheck').val() == ''){
-		alert('パスワードを入力してください。');
-		$('#userPasswordCheck').focus();
-		return false;
-	}
-	if($('#userName').val() == ''){
-		alert('名前を入力してください。');
-		$('#userName').focus();
-		return false;
-	}
-	if($('#year').val() == '' || $('#month').val() == '' || $('#day').val() == ''){
-		alert('生年月日を入力してください。');
-		$('#year').focus();
-		return false;
-	}
-	if($('#userPhoneNumber').val() == ''){
-		alert('電話番号を入力してください。');
-		$('#userPhoneNumber').focus();
-		return false;
-	}
-	if($('#userEmail').val() == ''){
-		alert('E-メールを入力してください。');
-		$('#userEmail').focus();
-		return false;
-	}
-	if($('#userZipCode').val() == ''){
-		alert('郵便番号を入力してください。');
-		$('#userZipCode').focus();
-		return false;
-	}
-	if($('#userAddress1').val() == ''){
-		alert('住所を入力してください。');
-		$('#userAddress1').focus();
-		return false;
-	}
+function signupCheck() {
+	if(!inputDataCheck.userId($('#userId').val())) return false;
+	if(!inputDataCheck.userPassword($('#userPassword').val())) return false;
+	if(!inputDataCheck.userPasswordCheck($('#userPasswordCheck').val())) return false;
+	if(!inputDataCheck.userName($('#userName').val())) return false;
+	if(!inputDataCheck.userBirth($('#year').val(), $('#month').val(), $('#day').val())) return false;
+	if(!inputDataCheck.userPhoneNumber($('#userPhoneNumber').val())) return false;
+	if(!inputDataCheck.userEmail($('#userEmail').val())) return false;
+	if(!inputDataCheck.userZipCode($('#userZipCode').val())) return false;
+	if(!inputDataCheck.userAddress1($('#userAddress1').val())) return false;
 	if(userIdCheckResult == 0 || userEmailCheckResult == 0){
 		alert('ID, Emailをチェックしてください。');
 		return false;
@@ -57,15 +160,41 @@ function emptyCheck() {
 	
 }
 
+$('#userPhoneNumber').change(function(){
+	var regexp = /^\d{11}$/;
+	var phoneNumber = $('#userPhoneNumber').val();
+	if( !regexp.test(phoneNumber) ) {
+
+	alert("電話番号は11桁の数字を入力してください。");
+		$('#userPhoneNumber').val('');
+		$('#userPhoneNumber').focus();
+
+	}else{
+		var num1 = $('#userPhoneNumber').val().substring(0,3);
+		var num2 = $('#userPhoneNumber').val().substring(3,7);
+		var num3 = $('#userPhoneNumber').val().substring(7,11);
+		$('#userPhoneNumber').val(num1+'-'+num2+'-'+num3);
+	}
+});
+
 /**
  * パスワードが一致するかチェック
  * @returns
  */
-$('#userPasswordCheck').keyup(function(){
+$('#userPassword').change(function(){
+	if(!inputDataCheck.userPassword($('#userPassword').val())) {
+		return false;
+	}
+})
+$('#userPasswordCheck').change(function(){
+
+	if(!inputDataCheck.userPasswordCheck($('#userPasswordCheck').val())) {return false;}
+
 	if($('#userPassword').val() == $('#userPasswordCheck').val()){
 		$('#passwordCheckResult').html('パスワードが一致します。');
 		$('#passwordCheckResult').css('color', 'blue');
 	}else{
+		$('#userPassword').focus();
 		$('#passwordCheckResult').html('パスワードが一致しません。');
 		$('#passwordCheckResult').css('color', 'red');
 	}
@@ -78,11 +207,8 @@ $('#userPasswordCheck').keyup(function(){
  */
 function userIdCheck(){
 	var userId = $('#userId').val();
-	if(userId == ''){
-		alert('IDを入力してください。');
-		$('#userId').focus();
-		return false;
-	}
+	if(!inputDataCheck.userId(userId)) return false;
+	
 	$.ajax({
 		type : "POST",
 		url : "./userIdCheckAjax.php",
@@ -101,22 +227,6 @@ function userIdCheck(){
 	});
 }
 
-/**
- * E-メールの形をチェックする
- * @param str
- * @returns
- */
-function emailTypeCheck(str)
-{                                                 
-     var reg_email = /^([0-9a-zA-Z_\.-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/;
-     if(!reg_email.test(str)) {
-          return false;
-     }
-     else {
-          return true; 
-     }
-}         
-
 
 /**
  * E-メールをチェックする
@@ -125,21 +235,11 @@ function emailTypeCheck(str)
 function userEmailCheck()
 {
 	var userEmail = $('#userEmail').val();
-	if(userEmail == ''){
-		alert('E-メールを入力してください。');
-		$('#userEmail').focus();
-		return false;
-	}
-	
-	if(!emailTypeCheck(userEmail)){
-		alert('E-メール形式が間違っています。');
-		$('#userEmail').focus();
-		return false;
-	}
+	if(!inputDataCheck.userEmail(userEmail)) return false;
 	
 	$.ajax({
 		type : "POST",
-		url : "./userEmailCheckAjax.php",
+		url : "../user/userEmailCheckAjax.php",
 		data : {userEmail : userEmail},
 		success : function(data){
 			if(data){
@@ -161,12 +261,7 @@ function userEmailCheck()
  */
 function searchZipCode(){
 	var zipCode = $('#userZipCode').val();
-	
-	if(zipCode == ''){
-		alert('郵便番号を入力してください。');
-		$('#userZipCode').focus();
-		return false;
-	}
+	if(!inputDataCheck.userZipCode(zipCode)) return false;
 	
 	$.ajax({
 		type : "GET",
@@ -199,90 +294,30 @@ function searchZipCode(){
 }
 
 
-$('#userPhoneNumber').change(function(){
-	var regexp = /^\d{11}$/;
-	var phoneNumber = $('#userPhoneNumber').val();
-	if( !regexp.test(phoneNumber) ) {
-
-	alert("電話番号は11桁の数字を入力してください。");
-		$('#userPhoneNumber').val('');
-		$('#userPhoneNumber').focus();
-
-	}else{
-		var num1 = $('#userPhoneNumber').val().substring(0,3);
-		var num2 = $('#userPhoneNumber').val().substring(3,7);
-		var num3 = $('#userPhoneNumber').val().substring(7,11);
-		$('#userPhoneNumber').val(num1+'-'+num2+'-'+num3);
-	}
-});
-
-
-
-/*--------------------------------------ログイン-------------------------------------*/
+/**
+ * ログインチェック
+ * @returns
+ */
 function loginCheck(){
-	if($('#userId').val() == ''){
-		alert('IDを入力してください。');
-		$('#userId').focus();
-		return false;
-	}
-	if($('#userPassword').val() == ''){
-		alert('PASSWORDを入力してください。');
-		$('#userPassword').focus();
-		return false;
-	}
+	if(!inputDataCheck.userId($('#userId').val())) return false;
+	if(!inputDataCheck.userPassword($('#userPassword').val())) return false;
 }
-
-
-/*--------------------------------------パスワード変更-------------------------------------*/
-
-
+/**
+ * パスワード変更
+ * @returns
+ */
 function updatePasswordCheck(){
-	
-	if($('#oldPassword').val() == ''){
-		alert('旧パスワードを入力してください。');
-		$('#oldPassword').focus();
-		return false;
-	}
-	if($('#newPassword1').val() == ''){
-		alert('新パスワードを入力してください。');
-		$('#newPassword1').focus();
-		return false;
-	}
-	if($('#newPassword2').val() == ''){
-		alert('新パスワード（確認）を入力してください。');
-		$('#newPassword2').focus();
-		return false;
-	}
-	if($('#newPassword1').val() != $('#newPassword2').val()){
-		alert('新パスワードが一致しません。');
-		$('#newPassword1').val('');
-		$('#newPassword2').val('');
-		$('#passwordCheckResult').val('');
-		$('#newPassword1').focus();
-		return false;
-	}
-    
+	if(!inputDataCheck.oldPassword($('#oldPassword').val())) return false;
+	if(!inputDataCheck.userPassword($('#userPassword').val())) return false;
+	if(!inputDataCheck.userPasswordCheck($('#userPasswordCheck').val())) return false;
 }
 
-$('#newPassword2').keyup(function(){
-	if($('#newPassword1').val() == $('#newPassword2').val()){
-		$('#passwordCheckResult').html('パスワードが一致します。');
-		$('#passwordCheckResult').css('color', 'blue');
-	} else{
-		$('#passwordCheckResult').html('パスワードが一致しません。');
-		$('#passwordCheckResult').css('color', 'red');
-	}
-})
+$('.ModalClose').on('click', function(){$('input').val('');});
 
-$('.passwordUpdateModalClose').on('click', function(){
-	$('#oldPassword').val('');
-	$('#newPassword1').val('');
-	$('#newPassword2').val('');
-	$('#passwordCheckResult').val('');
-})
-
-/* ---------------------------------詳細情報更新---------------------------------------- */
-
+/**
+ * ユーザー詳細情報変更
+ * @returns
+ */
 function isDetailUserUpdate(){
 	var userNo = $('#userNo').val();
 	var userPhoneNumber = $('#userPhoneNumber').val();
@@ -291,28 +326,11 @@ function isDetailUserUpdate(){
 	var userAddress1 = $('#userAddress1').val();
 	var userAddress2 = $('#userAddress2').val();
 	
-	if(userPhoneNumber == ''){
-		alert('電話番号を入力してください。');
-		$('#userPhoneNumber').focus();
-		return false;
-	}
-	if(userEmail == ''){
-		alert('E-メールを入力してください。');
-		$('#userEmail').focus();
-		return false;
-	}
-	if(userZipCode == ''){
-		alert('郵便番号を入力してください。');
-		$('#userZipCode').focus();
-		return false;
-	}
-	if(userAddress1 == ''){
-		alsert('住所を入力してください。');
-		$('#userAddress1').focus();
-		return false;
-	}
-	
-	
+	if(!inputDataCheck.userPhoneNumber(userPhoneNumber)) return false;
+	if(!inputDataCheck.userEmail(userEmail)) return false;
+	if(!inputDataCheck.userZipCode(userZipCode)) return false;
+	if(!inputDataCheck.userAddress1(userAddress1)) return false;
+
 	$.ajax({
 		type : "POST",
 		url : "./detailUserUpdateAjax.php",
@@ -335,19 +353,46 @@ function isDetailUserUpdate(){
 	});
 }
 
-/* ---------------------------------会員脱退---------------------------------------- */
 
-function deleteUser(){
-	if($('#userPassword').val() == ''){
-		alert('パスワードを入力してください。');
-		$('#userPassword').focus();
-		return false;
-	}
+/**
+ * 会員脱退
+ * @param userNo
+ * @returns
+ */
+function deleteUserFunction(userNo){
+	if(!inputDataCheck.userDeletePassword($('#userDeletePassword').val())) return false;
 	
+	$.ajax({
+		type : 'POST',
+		url : './deleteUserAjax.php',
+		data : {
+			userNo : userNo,
+			userPassword : $('#userDeletePassword').val()
+		},
+		success : function(result){
+			switch(result){
+				case '999':
+					alert('DBエラー');
+					break;
+				case '9':
+					alert('パスワードが間違ってます。');
+					$('#userDeletePassword').val('');
+					$('#userDeletePassword').focus();
+					break;
+				case '1' :
+					alert('脱退しました。');
+					location.href='../index.php';
+					break;
+			}
+		}
+	});
 	
 }
 
-/*-------------------------------------ID探す---------------------------------------------------- */
+/**
+ * ID探す
+ * @returns
+ */
 function findUserIdAjax(){
 	var userEmail = $('#findIdEmail').val();
 	
@@ -374,8 +419,11 @@ function findUserIdAjax(){
 	
 }
 
-/*-------------------------------------PASSWORD探す---------------------------------------------------- */
 
+/**
+ * パスワード探す
+ * @returns
+ */
 function findUserPasswordAjax(){
 	var userId = $('#findPasswordId').val();
 	var userEmail = $('#findPasswordEmail').val();
@@ -408,7 +456,11 @@ function findUserPasswordAjax(){
 	});
 }
 
-/*---------------------ユーザー管理----------------------------- */
+/**
+ * ユーザー管理
+ * @param userNo
+ * @returns
+ */
 function userDetailModal(userNo){
 	
 	$.ajax({
@@ -456,17 +508,25 @@ function userGoodsCountCheck(userNo){
 			$('#userGoodsCountCheckList').html('');
 			$('#userGoodsCountCheckUserId').html(result['result'][0].user_id+"様の出品項目");
 			
-			var goodsOnSale = "<span class='text-primary'>販売中</span>";
 			
 			for(var i = 0; i < result['result'].length; i++){
+				var goodsOnSale = "<span class='text-primary'>販売中</span>";
 				if(result['result'][i].goods_onsale == '1'){
 					goodsOnSale = "<span class='text-danger'>販売完了</span>";
+				}
+				var img = '<img src=\'../upload/'+result['result'][i].goods_filerealname+'\' style="max-height: 74px; max-width: 74px">'
+				if(result['result'][i].goods_filerealname == null){
+					img = '<img src="../img/noImg.jpg" style="max-height: 74px; max-width: 74px">'
+				}
+				
+				if(result['result'][i].goods_onsale == '1'){
+					img = '<img src="../img/soldout.png" style="max-height: 74px; max-width: 74px">';
 				}
 				$('#userGoodsCountCheckList').append(
 						'<hr>'+
 						'<div style="display: flex;flex-direction: row">' +
 						'<div style="margin: 2px; padding: 5px; flex: 0 1 10%;" id="listImg">' +
-						'<img src="../img/123.jpg" style="max-height: 74px; max-width: 74px">' +
+						img +
 						'</div>'+
 						'<div style="margin: 2px; padding: 5px; flex: 0 1 70%;">' +
 						'<h5 style="margin:0" class="text-dark font-weight-bold"><a href="../goods/goodsDetail.php?goods_no='+result['result'][i].goods_no+'">'+ result['result'][i].goods_title +'</a></h5>' +
@@ -535,3 +595,83 @@ function userHateCountButton(userNo){
 	});
 }
 
+$('#nonUserBuyClose').click(function(){
+	$('#userName').val('');
+	$('#userPassword').val('');
+	$('#userPasswordCheck').val('');
+	$('#userEmail').val('');
+	$('#userZipCode').val('');
+	$('#userAddress1').val('');
+	$('#userAddress2').val('');
+})
+
+function nonUserBuy(goodsNo){
+	if(!inputDataCheck.userName($('#userName').val())) return false;
+	if(!inputDataCheck.userPassword($('#userPassword').val())) return false;
+	if(!inputDataCheck.userPasswordCheck($('#userPasswordCheck').val())) return false;
+	if(!inputDataCheck.userEmail($('#userEmail').val())) return false;
+	if(!inputDataCheck.userZipCode($('#userZipCode').val())) return false;
+	if(!inputDataCheck.userAddress1($('#userAddress1').val())) return false;
+	
+	$.ajax({
+		type:'POST',
+		url : '../buy/nonUserBuyAjax.php',
+		data : {
+			goodsNo : goodsNo,
+			nonUserName : $('#userName').val(),
+			nonUserPassword :$('#userPasswordCheck').val(),
+			nonUserEmail : $('#userEmail').val(),
+			nonUserAddress : $('#userZipCode').val() + $('#userAddress1').val() + $('#userAddress2').val()
+		},
+		success : function(result){
+			
+			if(result == '11'){
+				alert('購入完了された商品です。');
+			}else if(result == '1'){
+				alert('購入しました。');
+				location.href="../index.php";
+			}
+		}
+	});
+}
+
+function nonUserCheck(){
+	if(!inputDataCheck.userEmail($('#userEmail').val())) return false;
+	if(!inputDataCheck.userPassword($('#userPassword').val())) return false;
+	
+	$.ajax({
+		type : 'POST',
+		url : './nonUserBuyListAjax.php',
+		data : {
+			nonUserEmail : $('#userEmail').val(),
+			nonUserPassword : $('#userPassword').val()
+		},
+		success : function(result){
+			if(result == "9"){
+				alert('入力した情報はありません。');
+				$('#userEmail').val('');
+				$('#userPassword').val('');
+			}else{
+				console.log(result);
+				
+				$('#nonUserBuyName').html(result['result'].nonuser_name+"様の購入リスト");
+				$('#nonUserBuyList').append(
+						'<hr>'+
+						'<div style="display: flex;flex-direction: row">' +
+						'<div style="margin: 2px; padding: 5px; flex: 0 1 10%;" id="listImg">' +
+						'<img src=\'../upload/'+result['result'].goods_filerealname+'\' style="max-height: 74px; max-width: 74px">' +
+						'</div>'+
+						'<div style="margin: 2px; padding: 5px; flex: 0 1 70%;">' +
+						'<h5 style="margin:0" class="text-dark font-weight-bold"><a href="../goods/goodsDetail.php?goods_no='+result['result'].goods_no+'">'+ result['result'].goods_title +'</a></h5>' +
+						'<p style="margin-bottom:10px"><span class="text-dark font-weight-bold">' + result['result'].goods_price + '</span></p>' +
+						'<p style="margin:0"><span class="text-dark">' + result['result'].goods_content + '</span></p>' +
+						'</div>' +
+						'</div>' 
+						);
+				$('#nonUserBuyModal').modal('show');				
+			}
+			
+		}
+	});
+	
+}

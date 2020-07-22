@@ -85,7 +85,7 @@ function goodsDivAppend(result){
 	
 	for(var i = 0; i < result['result'].length; i++){
 		/* 条件によって写真が変わる */
-		var img = '<img src=\'../upload'+result['result'][i].goods_filerealname+'\' style="max-height: 74px; max-width: 74px">'
+		var img = '<img src=\'../upload/'+result['result'][i].goods_filerealname+'\' style="max-height: 74px; max-width: 74px">'
 		var button = '<button type="button" class="btn btn-info btn-sm" onclick="insertIntoCart(\''+result['result'][i].goods_no+'\')" >カートに入れる</button>';
 		if(result['result'][i].goods_filerealname == null){
 			img = '<img src="../img/noImg.jpg" style="max-height: 74px; max-width: 74px">'
@@ -162,7 +162,7 @@ function goodsDeleteModal(){
  */
 function goodsDelete(){
 	var goodsNo = $('#goodsDeleteForm [name="goodsNo"]').val();
-	var userPassword = $('#goodsDeleteForm [name="userPassword"]').val();
+	var userPassword = $('#goodsDeleteForm [name="userPassword2"]').val();
 	
 	$.ajax({
 		type : 'POST',
@@ -229,56 +229,96 @@ function goodsUpdate(){
 	});
 }
 
-/**
- * コメントとボタンを押すと処理を行う
- * @returns
- */
-$('#insertComment').click(function(){
-	if($('#goodsCommentContent').val() == ''){
-		alert('コメントを入力してください。');
-		$('#goodsCommentContent').focus();
-		return false;
-	}
-	if($('#goodsCommentForm [name="userNo"]').val() == ''){
-		alert('ログインしてください。');
-		$('#goodsCommentContent').val('');
-		$('#goodsCommentContent').focus();
-		return false;
-	}
-	goodsComment();
-})
-/**
- * コメントのリストを表示する
- * @returns
- */
-function goodsComment(){
 
-	var goodsNo = $('#goodsCommentForm [name="goodsNo"]').val();
-	var goodsCommentContent = $('#goodsCommentForm [name="goodsCommentContent"]').val();
-	var userNo = $('#goodsCommentForm [name="userNo"]').val();
-	$.ajax({
-		type : 'POST',
-		url : "goodsCommentCreateAjax.php",
-		data : {
-			goodsNo : goodsNo,
-			goodsCommentContent : goodsCommentContent,
-			userNo : userNo
-		},
-		success : function(result){
-			$('#goodsCommentList').html('');
-			$('#goodsCommentForm [name="goodsCommentContent"]').val('');
-			for(var i = 0; i < result['result'].length; i++){
-				$('#goodsCommentList').append(
-						'<hr>' +
-						'<div>' +
-						'<span style="float:left">'+result['result'][i].user_id+'</span>' +
-						'<span style="float:right">'+result['result'][i].goods_comment_createdate+'</span>' +
-						'</div>' +
-						'<div style="clear:both">' +
-						result['result'][i].goods_comment_content + 
-						'</div>'
-							);
-			}
+
+/**
+ * コメント管理
+ */
+var commentManager = new function(){
+	
+	/**
+	 * コメント登録する
+	 */
+	this.insert= function(data){
+		var goodsNo = data.goodsNo.value;
+		var goodsCommentContent = data.goodsCommentContent.value;
+		var userNo = data.userNo.value;
+		
+		
+		if(goodsCommentContent == ''){
+			alert('コメントを入力してください。');
+			$('#goodsCommentContent').focus();
+			return false;
 		}
-	});
+		if(userNo == ''){
+			alert('ログインしてください。');
+			$('#goodsCommentContent').val('');
+			$('#goodsCommentContent').focus();
+			return false;
+		}
+
+		$.ajax({
+			type : 'POST',
+			url : "./goodsCommentCreateAjax.php",
+			data : {
+				goodsNo : goodsNo,
+				goodsCommentContent : goodsCommentContent,
+				userNo : userNo
+			},
+			success : function(result){	
+				$('#goodsCommentContent').val('');
+				commentManager.list(goodsNo, userNo);
+				}
+		});
+	}
+	
+	this.deleteFunction = function(goodsNo, commentNo){
+		$.ajax({
+			type : 'POST',
+			url : './commentDeleteAjax.php',
+			data : {
+				goodsNo : goodsNo,
+				commentNo : commentNo
+				},
+		success : function(result){	commentManager.list(goodsNo, result);}
+		});
+	}
+	
+	this.list = function(goodsNo, userNo){
+		$.ajax({
+			type : 'POST',
+			url : "./commentListAjax.php",
+			data : {
+				goodsNo : goodsNo
+			},
+			success : function(result){
+				$('#goodsCommentList').html('');
+				$('#goodsCommentForm [name="goodsCommentContent"]').val('');
+				for(var i = 0; i < result['result'].length; i++){
+					var deleteButton = "";
+					if(result['result'][i].user_no == userNo){
+						deleteButton ='<span style="float:right;"><a href="javascript:void(0);" onclick="commentManager.deleteFunction(\''+result['result'][i].goods_no+'\', \''+result['result'][i].goods_comment_no+'\')">削除</a></span>';
+					}
+					$('#goodsCommentList').append(
+							'<hr style="margin-top:30px; margin-bottom:0px;">' +
+							'<div>' +
+							'<span style="float:left">'+result['result'][i].user_id+'</span>' +
+							'<span style="float:right">'+result['result'][i].goods_comment_createdate+'</span>' +
+							'</div>' +
+							'<div style="clear:both"></div>' +
+							'<div>'+
+							'<span style="float:left">' +result['result'][i].goods_comment_content+'</span>' +
+							 deleteButton +
+							'</div>'
+								);
+				}
+			}
+		});
+	}
+}
+
+function userChat(formID, toID){
+	$.post("", {user_id : toID});
+	
+	
 }

@@ -27,10 +27,12 @@ $cartBuyCheckData = $_POST['goodsNo'];
 
 $sql = "
         SELECT
-            *
+            goods.*, goods_file.goods_filerealname
             FROM
                 goods
-           
+                LEFT JOIN
+                    goods_file
+                    ON goods.goods_no = goods_file.goods_no
             WHERE
         ";
 for($i = 0; $i < count($cartBuyCheckData); $i++){

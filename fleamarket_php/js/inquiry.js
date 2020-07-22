@@ -1,8 +1,9 @@
+
 /**
  * 一般ユーザーのお問い合わせする
  * @returns
  */
-function insertInquiryCheck(){
+function insertInquiry(){
 	
 	if(inquiryTitle == ''){
 		alert('タイトルを入力してください。');
@@ -101,6 +102,12 @@ function inquiryReplyContent(){
 	var myModalReplyNo = $('#myModalReplyNo').val();
 	var myModalReplyContent = $('#inquiry_replycontent').val();
 	
+	if(myModalReplyContent == ''){
+		alert('内容を入力してください。');
+		$('#inquiry_replycontent').focus();
+		return false;
+	}
+	
 	$.ajax({
 		type : "POST",
 		url : "./replyInquiryAjax.php",
@@ -111,7 +118,7 @@ function inquiryReplyContent(){
 		success : function(result){
 			if(result){
 				alert('返信しました。');
-				location.href="./listInquiry.php";
+				location.href="./inquiry.php";
 			}else{
 				alert('返信に失敗しました。');
 			}

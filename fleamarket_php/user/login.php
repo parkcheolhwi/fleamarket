@@ -59,31 +59,25 @@ if(isset($_POST['login'])){
      * @var unknown $data
      */
     
-    if (mysqli_num_rows($result) != 1) {
-        $errorMsg = "ログイン情報がありません。";
-        header("Location: ./login.php?errorMsg={$errorMsg}");
-        exit;
-    } 
+    if (mysqli_num_rows($result) != 1) $errorMsg = "ログイン情報がありません。";
+
     $data = mysqli_fetch_assoc($result);
+    if(mysqli_num_rows($result) > 0 && $data['user_mailcheck'] != 'Y')  $errorMsg = "メール認証をしてください。";
+
     
-    if($data['user_mailcheck'] != 'Y'){
-        $errorMsg = "メール認証をしてください。";
-        header("Location: ./login.php?errorMsg={$errorMsg}");
-        exit;
+    
+    if(!isset($errorMsg)) {
+        /* セッション、クッキーに情報の格納しメイン画面に移動する*/
+        $_SESSION['userInfo'] = $data;
         
-    } 
-    
-    /* セッション、クッキーに情報の格納しメイン画面に移動する*/
-    $_SESSION['userInfo'] = $data;
-    
-    if($_POST['idSaveCheck'] == 'on'){
-        setcookie("userId", $loginData['userId'], (time() + 30 * 86400), '/');            
+        if($_POST['idSaveCheck'] == 'on'){
+            setcookie("userIdLogin", $loginData['userId'], (time() + 30 * 86400), '/');            
+        }
+        if($_POST['passwordSaveCheck'] == 'on'){
+            setcookie("userPasswordLogin", $loginData['userPassword'], (time() + 30 * 86400), '/');            
+        }
+        header("Location: ../index.php");
     }
-    if($_POST['passwordSaveCheck'] == 'on'){
-        setcookie("userPassword", $loginData['userPassword'], (time() + 30 * 86400), '/');            
-    }
-    header("Location: ../index.php");
-    exit;
     mysqli_free_result($result);
     mysqli_close($conn);
     
@@ -106,7 +100,7 @@ if(isset($_POST['login'])){
 </head>
 <body>
 	<?php require_once '../menu/menunav.php';?>
-	
+	<?php if(isset($errorMsg)) print "<script>alert('{$errorMsg}');</script>" ?>
 	<div class="row">
     	<div class="col-lg-4"></div>	
     		
@@ -115,23 +109,23 @@ if(isset($_POST['login'])){
     		<form  action="./login.php" method="post" onsubmit="return loginCheck();">
     			<div class="md-form">
     				<i class="fas fa-user prefix"></i>
-                    <input  type="text" class="form-control" id="userId" name="userId" value="<?php if(isset($_COOKIE['userId'])) echo $_COOKIE['userId']?>">
+                    <input  type="text" class="form-control" id="userId" name="userId" value="<?php if(isset($_COOKIE['userIdLogin'])) echo $_COOKIE['userIdLogin']?>">
                     <label for="userId">IDを入力してください。</label>
                 </div>
         		<div class="md-form">
         			<i class="fas fa-lock prefix"></i>
-                    <input  type="password" class="form-control" id="userPassword" name="userPassword" value="<?php if(isset($_COOKIE['userPassword'])) echo $_COOKIE['userPassword']?>">
+                    <input  type="password" class="form-control" id="userPassword" name="userPassword" value="<?php if(isset($_COOKIE['userPasswordLogin'])) echo $_COOKIE['userPasswordLogin']?>">
                     <label for="userPassword">パスワードを入力してください。</label>
                 </div>
 
 				<div class="custom-control custom-checkbox custom-control-inline">
-             		   <input type="checkbox" class="custom-control-input" id="idSaveCheck" name="idSaveCheck" <?php if(isset($_COOKIE['userId'])) echo "checked"?>>
+             		   <input type="checkbox" class="custom-control-input" id="idSaveCheck" name="idSaveCheck" <?php if(isset($_COOKIE['userIdLogin'])) echo "checked"?>>
                 		<label class="custom-control-label" for="idSaveCheck">ID保存</label>
                 </div>
                 
                 
                 <div class="custom-control custom-checkbox custom-control-inline">
-               		 <input type="checkbox" class="custom-control-input" id="passwordSaveCheck" name="passwordSaveCheck" <?php if(isset($_COOKIE['userPassword'])) echo "checked"?>>
+               		 <input type="checkbox" class="custom-control-input" id="passwordSaveCheck" name="passwordSaveCheck" <?php if(isset($_COOKIE['userPasswordLogin'])) echo "checked"?>>
                 	<label class="custom-control-label" for="passwordSaveCheck">PASSWORD保存</label>
                 </div>
                 

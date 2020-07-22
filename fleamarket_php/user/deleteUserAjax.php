@@ -57,25 +57,13 @@ if(mysqli_num_rows($result) > 0){
         
         if(mysqli_query($conn, $sql)){
             session_destroy();
-            $successMsg = "会員脱退に成功しました。";
-            header("Location: ../index.php?successMsg={$successMsg}");
-            exit;
+            echo "1";
         }else{
-            $errorMsg = "SQL実行に失敗しました。";
-            $path = "index";
-            header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
-            exit;
+           echo "999";
         }
         
     }else{
-        $errorMsg = "パスワードが一致しません。";
-        header("Location: ./detailUser.php?errorMsg={$errorMsg}");
-        exit;
+        echo "9";
     }
-}else{
-    session_destroy();
-    $errorMsg = "データが存在しません。";
-    header("Location: ../login.php?errorMsg={$errorMsg}");
-    exit;
 }
 ?>

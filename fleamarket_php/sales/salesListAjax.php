@@ -48,7 +48,8 @@ $sql = "
             goods.goods_price, 
             goods.goods_commission, 
             goods.goods_cprice, 
-            userinfo.*
+            userinfo.*,
+            goods_file.goods_filerealname
                 FROM 
                     buy 
                     INNER JOIN
@@ -57,10 +58,15 @@ $sql = "
                     INNER JOIN 
                         userinfo 
                         ON goods.user_no = userinfo.user_no
+                    LEFT JOIN
+                        goods_file
+                        ON goods.goods_no = goods_file.goods_no
                 WHERE
                     goods.goods_commission = '1'
                     AND buy.buy_createdate 
                         LIKE '%{$date}%'
+                ORDER BY
+                    buy.buy_createdate DESC
         ";
 
 $result = mysqli_query($conn, $sql);

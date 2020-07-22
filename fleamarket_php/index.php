@@ -1,5 +1,7 @@
 <?php 
 session_start();
+
+# 最近みた商品のセッションを生成
 if(!isset($_SESSION['recentlyViewedGoods'])) $_SESSION['recentlyViewedGoods'] = array();
 
 
@@ -13,8 +15,9 @@ $conn = mysqli_connect(
     '123456',
     'fleamarket'
     );
-
-
+/*
+ * 商品リスト
+ */
 $goodsListSql = "
         SELECT 
             goods.*, goods_file.goods_filerealname
@@ -26,16 +29,20 @@ $goodsListSql = "
                     goods.goods_no = goods_file.goods_no
                 WHERE
                     goods.goods_onsale = '0'
+                    AND goods.goods_check = '0'
                 ORDER BY 
                     goods.goods_updatedate DESC
         ";
-
-
-
-    
 $goodsList = mysqli_query($conn, $goodsListSql);
 
+/**
+ * ログインすると最近みた商品とお問い合わせのリストも表示する
+ */
 if(isset($_SESSION['userInfo'])){
+    /**
+     * お問い合わせのリスト
+     * @var Ambiguous $inquiryListSql
+     */
     $inquiryListSql = "
             SELECT
                 inquiry_title, inquiry_date, inquiry_replycheck, inquiry_no
@@ -49,6 +56,10 @@ if(isset($_SESSION['userInfo'])){
     $inquiryList = mysqli_query($conn, $inquiryListSql);
     
     
+    /**
+     * 最近みた商品のリスト
+     * @var integer $i
+     */
     $i = 0;
     if(isset($_SESSION['recentlyViewedGoods'])){
     $recentlyViewedGoodsSql = "
@@ -108,7 +119,8 @@ if(isset($_SESSION['userInfo'])){
 	</div>
 	
 	<div class="container">
-		<!-- 商品リストを -->
+		
+		<!-- 商品リスト-->
 		<hr>
 		<div>
     		<h4 class="text-dark font-weight-bold" style="float:left;">商品リスト</h4>
@@ -122,7 +134,6 @@ if(isset($_SESSION['userInfo'])){
 		        if($count == 5) break;
 		        if($row['goods_filerealname'] == null) $row['goods_filerealname'] = "noImg.jpg";
 		?>
-		
 		<div style="clear: both; display: flex;flex-direction: row">
     		<div style="margin: 2px; padding: 5px; flex: 0 1 10%;">
     			<img src="./upload/<?=$row['goods_filerealname']?>" style="max-height: 74px; max-width: 74px">
@@ -154,9 +165,7 @@ if(isset($_SESSION['userInfo'])){
 		<div style="width:100%; height:400px;">
 			<!-- ユーザーの最近見た商品リスト -->
 			
-			<div style="width:48%; float:left;">
-				<hr>
-        		
+			<div style="width:48%; float:left;"><hr>
         		<div >
             		<h4 class="text-dark font-weight-bold" style="float:left;">最近見た商品</h4>
         		</div>
@@ -178,21 +187,19 @@ if(isset($_SESSION['userInfo'])){
             			 <?=$row['goods_title'] ?>
             			 </div>
         			 </div>
-        			 <?php      
-        			        
-            			    }
-            			}
+        			 <?php       
+            			    } #while文
+            			} # if文
         			} else {
         			?>
         			商品がありません。
         			<?php 
         			}
         			?>
-        			
-        			
-    				
 				</div>
 			</div>
+			
+			
 			<!-- ユーザーのお問い合わせリスト -->
 		    <div style="width:48%; float:right;">
     			<hr>
@@ -201,7 +208,6 @@ if(isset($_SESSION['userInfo'])){
             		<?php mysqli_num_rows($inquiryList) > 5 ? print "<span style='float:right;'><a href='./inquiry/inquiry.php'>もっと見る</a></span>" : print ""?>
         		</div>
     			<table class="table table-hover">
-    				
             		    <?php 
             		        $count = 0;
                 		    while($row = mysqli_fetch_assoc($inquiryList)){
@@ -214,7 +220,7 @@ if(isset($_SESSION['userInfo'])){
     					</tr>
                 		<?php 
                 		  $count++;
-            		    }
+            		    } #while文
             		    mysqli_free_result($inquiryList);
             		    ?>
     		    	
@@ -238,18 +244,21 @@ if(isset($_SESSION['userInfo'])){
                     	<span aria-hidden="true">&times;</span>
                     </button>
                 </div>
+                
                 <div class="modal-body">
                 	<!-- 内容 -->
-                    <div id="myModalContent"></div>
-                    <hr>
+                    <div id="myModalContent"></div><hr>
+                    
+                    <!-- 返信 -->
                     <div>
                     	<span class="text-success">返信：</span>
-                    	<!-- 返信日 -->
                     	<span style="float:right;" id="myModalReplyDate"></span>
                     </div>
+                    
                     <!-- 返信内容 -->
                     <div id="myModalReplyContent"></div>
                 </div>
+                
                 <div class="modal-footer">
                		<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 </div>

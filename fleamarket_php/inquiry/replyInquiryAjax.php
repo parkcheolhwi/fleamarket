@@ -1,4 +1,5 @@
 <?php 
+
 $conn = mysqli_connect(
     'localhost',
     'root',
@@ -39,7 +40,4 @@ if(!mysqli_query($conn, $sql)){
 }
 
 echo true;
-    
-
-?>
 ?>

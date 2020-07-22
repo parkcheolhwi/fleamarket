@@ -26,14 +26,19 @@ $userNo = mysqli_real_escape_string($conn, $_POST['userNo']);
      
 $sql = "
        SELECT 
-            * 
+            userinfo.* , goods.*, goods_file.goods_filerealname
             FROM 
                 userinfo 
                 INNER JOIN 
                     goods 
                     ON 
-                        userinfo.user_no = goods.user_no 
+                        userinfo.user_no = goods.user_no
+                LEFT JOIN
+                    goods_file
+                    ON goods.goods_no = goods_file.goods_no
+ 
                     WHERE userinfo.user_no = {$userNo}
+                    ORDER BY goods.goods_createdate DESC;
         ";
 $result = mysqli_query($conn, $sql);
 $data = array();

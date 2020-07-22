@@ -16,20 +16,24 @@ if(mysqli_connect_errno()){
     exit;
 }
 $chatFromId = mysqli_real_escape_string($conn, $_POST['fromID']);
-
 $sql = "
         SELECT 
-            *
+            * 
             FROM 
                 chat 
             WHERE 
-                toID = '{$chatFromId}'
-            GROUP BY 
-                FromID
-            ORDER BY 
-                chatTime DESC
-        ";
-
+                chatID 
+                IN (SELECT 
+                        MAX(chatID) 
+                            FROM 
+                                chat 
+                                WHERE 
+                                    toID='{$chatFromId}' 
+                                    OR fromID='{$chatFromId}' 
+                                    GROUP BY chat_room)
+                    ORDER BY 
+                        chatTime DESC
+";
 $result = mysqli_query($conn, $sql);
 $data = array();
 if(mysqli_num_rows($result) > 0){
