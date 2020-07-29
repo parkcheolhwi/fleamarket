@@ -1,5 +1,9 @@
 <?php 
 session_start();
+require_once './db/connection.php';
+require_once './inquiry/inquiry.inc';
+require_once './goods/goods.inc';
+
 
 # 最近みた商品のセッションを生成
 if(!isset($_SESSION['recentlyViewedGoods'])) $_SESSION['recentlyViewedGoods'] = array();
@@ -15,46 +19,19 @@ $conn = mysqli_connect(
     '123456',
     'fleamarket'
     );
-/*
- * 商品リスト
- */
-$goodsListSql = "
-        SELECT 
-            goods.*, goods_file.goods_filerealname
-            FROM 
-                goods
-            LEFT JOIN
-                goods_file
-                ON 
-                    goods.goods_no = goods_file.goods_no
-                WHERE
-                    goods.goods_onsale = '0'
-                    AND goods.goods_check = '0'
-                ORDER BY 
-                    goods.goods_updatedate DESC
-        ";
-$goodsList = mysqli_query($conn, $goodsListSql);
+# 商品リスト
+$goodsModel = new GoodsModel();
+$goodsModel -> indexGoodsList();
+
 
 /**
  * ログインすると最近みた商品とお問い合わせのリストも表示する
  */
 if(isset($_SESSION['userInfo'])){
-    /**
-     * お問い合わせのリスト
-     * @var Ambiguous $inquiryListSql
-     */
-    $inquiryListSql = "
-            SELECT
-                inquiry_title, inquiry_date, inquiry_replycheck, inquiry_no
-                FROM
-                    inquiryinfo
-                WHERE
-                    user_no = {$_SESSION['userInfo']['user_no']}
-                ORDER BY 
-                    inquiry_date DESC
-                ";
-    $inquiryList = mysqli_query($conn, $inquiryListSql);
     
+    #お問い合わせリスト
+    $inquiryModel = new InquiryModel();
+    $inquiryModel -> processing();
     
     /**
      * 最近みた商品のリスト
@@ -62,18 +39,9 @@ if(isset($_SESSION['userInfo'])){
      */
     $i = 0;
     if(isset($_SESSION['recentlyViewedGoods'])){
-    $recentlyViewedGoodsSql = "
-                    SELECT 
-                        goods.goods_title, goods.goods_no, goods_file.goods_filerealname
-                            FROM
-                                goods
-                            LEFT JOIN
-					           goods_file
-                                ON goods.goods_no = goods_file.goods_no
-                            WHERE 
-                                goods.goods_no 
-                              IN (
-                    ";
+    $recentlyViewedGoodsSql = " SELECT  goods.goods_title, goods.goods_no, goods_file.goods_filerealname FROM goods
+                                    LEFT JOIN goods_file ON goods.goods_no = goods_file.goods_no 
+                                        WHERE goods.goods_no IN ( ";
         foreach($_SESSION['recentlyViewedGoods'] as $value){
             $recentlyViewedGoodsSql .= $value;
             if(++$i != count($_SESSION['recentlyViewedGoods'])) $recentlyViewedGoodsSql .= ", ";
@@ -81,7 +49,7 @@ if(isset($_SESSION['userInfo'])){
         $recentlyViewedGoodsSql .= " ) ";
         
         $i = 0;
-        $recentlyViewedGoodsSql .= "  ORDER BY FIELD(goods.goods_no, ";
+        $recentlyViewedGoodsSql .= "  GROUP BY goods.goods_no ORDER BY FIELD(goods.goods_no, ";
         $recentlyViewedGoodsReverse = array_reverse($_SESSION['recentlyViewedGoods']);
         foreach($recentlyViewedGoodsReverse as $value){
             $recentlyViewedGoodsSql .= $value;
@@ -124,43 +92,36 @@ if(isset($_SESSION['userInfo'])){
 		<hr>
 		<div>
     		<h4 class="text-dark font-weight-bold" style="float:left;">商品リスト</h4>
-    		<?php mysqli_num_rows($goodsList) > 5 ? print "<span style='float:right;'><a href='./goods/goodsList.php'>もっと見る</a></span>" : print ""?>
+    		<?php count($goodsModel->getGoodsList()) > 4 ? print "<span style='float:right;'><a href='./goods/goodsList.php'>もっと見る</a></span>" : print ""?>
 		</div>
-	
 		<?php 
-		if(mysqli_num_rows($goodsList) > 0){
-		    $count = 0;
-		    while($row = mysqli_fetch_assoc($goodsList)){
-		        if($count == 5) break;
-		        if($row['goods_filerealname'] == null) $row['goods_filerealname'] = "noImg.jpg";
+		for($i = 0; $i < count($goodsModel->getGoodsList()); $i++){
+		    $img = $goodsModel->getGoodsList()[$i]['goods_filerealname'];
+		    if($goodsModel->getGoodsList()[$i]['goods_filerealname'] == null) $img = "noImg.jpg";
 		?>
 		<div style="clear: both; display: flex;flex-direction: row">
     		<div style="margin: 2px; padding: 5px; flex: 0 1 10%;">
-    			<img src="./upload/<?=$row['goods_filerealname']?>" style="max-height: 74px; max-width: 74px">
+    			<img src="./upload/<?=$img?>" style="max-height: 74px; max-width: 74px">
     		</div>
     		<div style="margin: 2px; padding: 5px; flex: 0 1 70%;">
-        		<h5 style="margin:0" class="text-dark font-weight-bold"><a href="./goods/goodsDetail.php?goods_no=<?=$row['goods_no'] ?>"><?=$row['goods_title'] ?></a></h5>
-        		<p style="margin-bottom:10px"><span class="text-dark font-weight-bold"><?=$row['goods_price'] ?>円</span></p>
-        		<p style="margin:0"><span class="text-dark"><?=$row['goods_content'] ?></span></p>
+        		<h5 style="margin:0" class="text-dark font-weight-bold"><a href="./goods/goodsDetail.php?goods_no=<?=$goodsModel->getGoodsList()[$i]['goods_no'] ?>"><?=$goodsModel->getGoodsList()[$i]['goods_title'] ?></a></h5>
+        		<p style="margin-bottom:10px"><span class="text-dark font-weight-bold"><?=$goodsModel->getGoodsList()[$i]['goods_price'] ?>円</span></p>
+        		<p style="margin:0"><span class="text-dark"><?=$goodsModel->getGoodsList()[$i]['goods_content'] ?></span></p>
     		</div>
     		<div style="margin: 2px; padding: 5px; flex: 0 1 20%;">
-        		<p style="margin:0">修正日：<?=$row['goods_updatedate'] ?></p>
-        		<p style="margin-bottom:10px">登録日：<?=$row['goods_createdate'] ?></p>
+        		<p style="margin:0">修正日：<?=$goodsModel->getGoodsList()[$i]['goods_updatedate'] ?></p>
+        		<p style="margin-bottom:10px">登録日：<?=$goodsModel->getGoodsList()[$i]['goods_createdate'] ?></p>
     		</div>
 		</div> 
-		<?php 
-		      $count++;
-		    }
-		    mysqli_free_result($goodsList);
-		}
-		?>
+		<?php if($i==4) break;}?>
+		
 		
 		
 		
 		
 		
 		<?php 
-		if(isset($_SESSION['userInfo']) && mysqli_num_rows($inquiryList) > 0){
+		if(isset($_SESSION['userInfo'])){
 		?>
 		<div style="width:100%; height:400px;">
 			<!-- ユーザーの最近見た商品リスト -->
@@ -198,31 +159,26 @@ if(isset($_SESSION['userInfo'])){
         			?>
 				</div>
 			</div>
-			
-			
+			<?php }?>
+			<?php if(isset($_SESSION['userInfo']) && count($inquiryModel->getInquiryList()) > 0){?>
 			<!-- ユーザーのお問い合わせリスト -->
 		    <div style="width:48%; float:right;">
     			<hr>
         		<div>
             		<h4 class="text-dark font-weight-bold" style="float:left;">お問い合わせリスト</h4>
-            		<?php mysqli_num_rows($inquiryList) > 5 ? print "<span style='float:right;'><a href='./inquiry/inquiry.php'>もっと見る</a></span>" : print ""?>
+            		<?php $inquiryModel->getInquiryList() > 5 ? print "<span style='float:right;'><a href='./inquiry/inquiry.php'>もっと見る</a></span>" : print ""?>
         		</div>
     			<table class="table table-hover">
-            		    <?php 
-            		        $count = 0;
-                		    while($row = mysqli_fetch_assoc($inquiryList)){
-                		        $row['inquiry_replycheck'] == '0' ? $row['inquiry_replycheck']="<span class='text-danger'>未返信</span>" : $row['inquiry_replycheck'] = "<span class='text-success'>返信完了</span>";
-                		        if($count == 5) break;
-                		?>
-    					<tr>
-    						<td style="width:70%"><a href="javascript:void(0)" onclick="inquiryModal('<?=$row['inquiry_no'] ?>')"><?=$row['inquiry_title'] ?>(<?=$row['inquiry_replycheck'] ?>)</a></td>
-    						<td style="width:30%"><?=$row['inquiry_date'] ?></td>
+    					<?php 
+    					   for($i = 0; $i < 5; $i++){
+    					       $inquiryModel->getInquiryList()[$i]['inquiry_replycheck'] == '0'? $replyCheck="<span class='text-danger'>未返信</span>" : $replyCheck = "<span class='text-success'>返信完了</span>";
+    					?>
+						<tr>
+    						<td style="width:70%"><a href="javascript:void(0)" onclick="inquiryModal('<?= $inquiryModel->getInquiryList()[$i]['inquiry_no'] ?>')"><?= $inquiryModel->getInquiryList()[$i]['inquiry_title'] ?>(<?= $replyCheck ?>)</a></td>
+    						<td style="width:30%"><?= $inquiryModel->getInquiryList()[$i]['inquiry_date'] ?></td>
     					</tr>
-                		<?php 
-                		  $count++;
-            		    } #while文
-            		    mysqli_free_result($inquiryList);
-            		    ?>
+    					<?php }?>
+            		    
     		    	
     			</table>
     		</div>
@@ -235,40 +191,49 @@ if(isset($_SESSION['userInfo'])){
 	
 	<!-- お問い合わせ詳細内容 -->
     <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-notify modal-info" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                	<!-- タイトル -->
-                    <h4 class="modal-title w-100" id="myModalLabel"></h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    	<span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                
-                <div class="modal-body">
-                	<!-- 内容 -->
-                    <div id="myModalContent"></div><hr>
-                    
-                    <!-- 返信 -->
-                    <div>
-                    	<span class="text-success">返信：</span>
-                    	<span style="float:right;" id="myModalReplyDate"></span>
-                    </div>
-                    
-                    <!-- 返信内容 -->
-                    <div id="myModalReplyContent"></div>
-                </div>
-                
-                <div class="modal-footer">
-               		<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                </div>
+    <div class="modal-dialog modal-lg modal-notify modal-info" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            	<!-- タイトル -->
+            	<input type="hidden" id="inquiryNo" name="inquiryNo">
+                <h4 class="modal-title w-100" id="myModalLabel"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                	<span aria-hidden="true">&times;</span>
+                </button>
             </div>
+            
+            <div class="modal-body">
+            	<!-- 内容 -->
+                <div id="myModalContent"></div>
+                <hr>
+                <div>
+                	<span class="text-success">返信：</span>
+                	<!-- 返信日 -->
+                	<span style="float:right;" id="myModalReplyDate" ></span>
+                </div>
+                <!-- 返信内容 -->
+                
+                <?php if(isset($_SESSION['userInfo']) && $_SESSION['userInfo']['user_authority'] == '9'){ ?>
+                	<div id="myModalReplyContentText"></div>
+                <?php } else {?>
+                	<div id="myModalReplyContent"></div>
+                <?php }?>
+            </div>
+            
+            <div class="modal-footer">
+            	<?php if(isset($_SESSION['userInfo']) && $_SESSION['userInfo']['user_authority'] == '9'){ ?>
+            		<button type="button" class="btn btn-success" id="replyButton" onclick="inquiryReplyContent();">返信する</button>
+            	<?php }?>
+           		<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+            </div>
+            
         </div>
     </div>
+</div>
 
 <script src="./btjs/jquery.min.js"></script>
 <script src="./btjs/popper.min.js"></script>
 <script src="./btjs/bootstrap.min.js"></script>	
-<script src="./js/inquiry.js"></script>
+<script src="./btjs/fleamarket.js"></script>
 </body>
 </html>

@@ -29,8 +29,11 @@ function chatBox(toID){
 	var fromID = '<?= $_SESSION['userInfo']['user_id']?>';
 	$.ajax({
 		type : 'POST',
-		url : './chatBoxAjax.php',
-		data : {fromID : fromID},
+		url : './chatAjax.php',
+		data : {
+			fromID : fromID,
+			chatCmd : 'chatBox'
+			},
 		success : function(result){
 			var chatList = "";
 			for(var i = 0; i < result['result'].length; i++){
@@ -39,14 +42,17 @@ function chatBox(toID){
 					userId = result['result'][i].toID;
 				}
 				chatList = chatList + '<div id=\''+userId+'\'>' + 
+                            				'<div style="float:right"><button type="button" class="btn btn-outline-danger btn-sm">出る</button></div>' +
                             				'<a href="javascript:void(0);" onclick="chatList(\''+userId+'\')">'+
                             				'<div class="chat_list">' +
                             					'<div class="chat_people">' +
-                            						'<div class="chat_img"><img src="../img/123.jfif" alt="sunil"></div>' +
+                            						'<div class="chat_img"><img src="../upload/123.jfif" alt="sunil"></div>' +
                             						'<div class="chat_ib">' +
                             							'<h5>'+userId+' <span class="chat_date" id="'+userId+'ChatDate">'+result['result'][i].chatTime+'</span></h5>' +
                             							'<p id="'+userId+'ChatContent">'+result['result'][i].chatContent+'</p>' +
                             						'</div>' +
+                            						
+                        							 
                             					'</div>' +
                             				'</div>' +
                             				'</a>' +
@@ -74,11 +80,12 @@ function chatBox(toID){
 		
 		$.ajax({
 			type : 'POST',
-			url : './chatContentCreateAjax.php',
+			url : './chatAjax.php',
 			data : {
 				fromID : fromID,
 				toID : toID,
-				chatContent : chatContent
+				chatContent : chatContent,
+				chatCmd : 'contentInsert'
 			},
 			success : function(result){
 				if(result['result'].fromID == fromID){
@@ -94,7 +101,7 @@ function chatBox(toID){
 					$('.msg_history').append(
 							'<div class="incoming_msg" style="float:left; width:51%">' +
 							'<div class="incoming_msg_img" >'+
-							'<img src="../img/123.jfif" alt="sunil">' +
+							'<img src="../upload/123.jfif" alt="sunil">' +
 							'</div>'+								
 							'<div class="received_msg" >'+
 							'<p style="margin-bottom:0px;">'+result['result'].fromID+'</p>' +
@@ -125,10 +132,11 @@ function chatBox(toID){
 		
 		$.ajax({
 			type : 'POST',
-			url : './chatContentListAjax.php',
+			url : './chatAjax.php',
 			data : {
 				fromID : fromID,
-				toID : toID
+				toID : toID,
+				chatCmd : 'list'
 			},
 			success : function(result){
 				
@@ -152,7 +160,7 @@ function chatBox(toID){
 						$('.msg_history').append(
 								'<div class="incoming_msg" style="float:left; width:51%">' +
 								'<div class="incoming_msg_img" >'+
-								'<img src="../img/123.jfif" alt="sunil">' +
+								'<img src="../upload/123.jfif" alt="sunil">' +
 								'</div>'+								
 								'<div class="received_msg" >'+
 								'<p style="margin-bottom:0px;">'+result['result'][i].fromID+'</p>' +
@@ -240,10 +248,11 @@ function chatBox(toID){
 		<?php if(isset($_POST['user_id'])){?>
 		$.ajax({
 			type : 'POST',
-			url : './createAjax.php',
+			url : './chatAjax.php',
 			data : {
 				toID :'<?=$_POST['user_id'] ?>',
-				fromID : '<?=$_SESSION['userInfo']['user_id']?>' 
+				fromID : '<?=$_SESSION['userInfo']['user_id']?>' ,
+				chatCmd : 'insert'
 			},
 			success : function(result){
 				

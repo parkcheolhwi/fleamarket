@@ -9,7 +9,7 @@ function connection($sql){
     $root = "root";
     $pass = "123456";
     $db = "fleamarket";
-
+    
     if ($conn = mysqli_connect($url, $root, $pass, $db)) {
         
     $result = mysqli_query($conn, $sql) or die ("SQL文実行に失敗しました。SQL{$sql}");
@@ -28,12 +28,12 @@ function connection($sql){
  * @param $sql
  * @return 
  */
-function quizdbConnectionGetAutoIncrement($sql){
+function getIdConnection($sql){
     $url = "localhost";
     $root = "root";
-    $pass = "root123";
-    $db = "quizdb";
-    
+    $pass = "123456";
+    $db = "fleamarket";
+ 
     if ($conn = mysqli_connect($url, $root, $pass, $db)) {
         
         mysqli_query($conn, $sql) or die ("SQL文実行に失敗しました。SQL{$sql}");

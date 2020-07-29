@@ -1,40 +1,9 @@
-<?php session_start();
-$conn = mysqli_connect(
-    'localhost',
-    'root',
-    '123456',
-    'fleamarket'
-    );
-/**
- * DB接続チェックする
- */
-if(mysqli_connect_errno()){
-    $errorMsg = "DB接続に失敗しました。";
-    $path = "index";
-    header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
-    exit;
-}
-
-$sql = "
-        SELECT 
-            cart.cart_no, cart.user_no, cart.cart_createdate, goods.*, goods_file.goods_filerealname
-            FROM
-                cart
-            INNER JOIN
-                goods
-            ON
-                cart.goods_no = goods.goods_no
-            LEFT JOIN
-                goods_file
-            ON
-                goods.goods_no = goods_file.goods_no
-            WHERE 
-                cart.user_no = {$_SESSION['userInfo']['user_no']}
-        ";
-
-$result = mysqli_query($conn, $sql);
-
-
+<?php 
+session_start();
+require_once '../db/connection.php';
+require_once './cart.inc';
+$model = new CartModel();
+$model -> processing();
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,8 +21,6 @@ $result = mysqli_query($conn, $sql);
 <body>
 
 	<?php require_once '../menu/menunav.php';?>
-	
-
 	<div class="container" style="margin-top:50px">
 		<hr>
 		<div>
@@ -62,56 +29,48 @@ $result = mysqli_query($conn, $sql);
 		<div style="clear:both"></div>
 		<div style="float:right;" class="form-inline" >
 			<br>
-            <p style="margin:0; "><button type="button" class="btn btn-primary btn-sm " onclick="buyInserCheck();">購入</button></p>
+            <p style="margin:0; "><button type="button" class="btn btn-primary btn-sm " onclick="buyInsertCheck();">購入</button></p>
 		</div>
 		<div style="clear:both"></div>
 		<!-- カートリスト -->
-		<div >
-			<?php 
-			if(mysqli_num_rows($result) > 0){
-			    while($row = mysqli_fetch_assoc($result)){
-			?>
+		<div>
+			<?php if(count($model->getCartList())==0){?>
+			<div style="text-align:center" >
+				<h3 class="text-success font-weight-bold">内訳がありません。</h3>
+			</div>
+			<?php }?>
+			
+			<?php for($i = 0; $i < count($model->getCartList()); $i++){?>
 			<hr>
 			<div style="display: flex;flex-direction: row">
     			<div style="margin: 2px; padding: 5px; flex: 0 1 10%;">
-    				<?php if(isset($row['goods_filerealname'])){ ?>
-    					<img src="../upload/<?=$row['goods_filerealname'] ?>" style="max-height: 74px; max-width: 74px">
+    				<?php if(isset($model->getCartList()[$i]['goods_filerealname'])){ ?>
+    					<img src="../upload/<?=$model->getCartList()[$i]['goods_filerealname'] ?>" style="max-height: 74px; max-width: 74px">
     				<?php }else{?>
     					<img src="../upload/noImg.jpg" style="max-height: 74px; max-width: 74px">
     				<?php }?>
     			</div>
     			<div style="margin: 2px; padding: 5px; flex: 0 1 60%;">
-        			<h5 style="margin:0" class="text-dark font-weight-bold"><a href="../goods/goodsDetail.php?goods_no=<?=$row['goods_no'] ?>"><?=$row['goods_title'] ?></a></h5>
-        			<p style="margin-bottom:10px"><span class="text-dark font-weight-bold"><?=$row['goods_price'] ?></span></p>
-        			<p style="margin:0"><span class="text-dark"><?=$row['goods_content'] ?></span></p>
+        			<h5 style="margin:0" class="text-dark font-weight-bold"><a href="../goods/goodsDetail.php?goods_no=<?=$model->getCartList()[$i]['goods_no'] ?>"><?=$model->getCartList()[$i]['goods_title'] ?></a></h5>
+        			<p style="margin-bottom:10px"><span class="text-dark font-weight-bold"><?=$model->getCartList()[$i]['goods_price'] ?></span></p>
+        			<p style="margin:0"><span class="text-dark"><?=$model->getCartList()[$i]['goods_content'] ?></span></p>
     			</div>
     			<div style="margin: 2px; padding: 5px; flex: 0 1 25%; text-align:right;">
-        			<p style="margin-bottom:10px">カート登録：<?=$row['cart_createdate'] ?></p>
+        			<p style="margin-bottom:10px">カート登録：<?=$model->getCartList()[$i]['cart_createdate'] ?></p>
         			<div class="form-inline" style="float:right;">
-            			<p style="margin:0; "><button type="button" class="btn btn-outline-danger" onclick="cartDelete(<?=$row['cart_no'] ?>)">削除</button></p>
+            			<p style="margin:0; "><button type="button" class="btn btn-outline-danger" onclick="cartDelete(<?=$model->getCartList()[$i]['cart_no'] ?>)">削除</button></p>
         			</div>
     			</div>
     			<div style="margin: 2px; padding: 5px; flex: 0 1 5%; text-align:right;">
         			<div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" name="goodsChecked" id="goodsChecked<?=$row['cart_no'] ?>" value="<?=$row['goods_no']?>">
-                        <label class="custom-control-label" for="goodsChecked<?=$row['cart_no'] ?>"></label>
+                        <input type="checkbox" class="custom-control-input" name="goodsChecked" id="goodsChecked<?=$model->getCartList()[$i]['cart_no'] ?>" value="<?=$model->getCartList()[$i]['goods_no']?>">
+                        <label class="custom-control-label" for="goodsChecked<?=$model->getCartList()[$i]['cart_no'] ?>"></label>
                     </div>
     			</div>
 			</div> 
-			<?php         
-			    }
-			}else{
-			?>
-			<div style="text-align:center" >
-				<h3 class="text-success font-weight-bold">内訳がありません。</h3>
-			</div>
-			<?php     
-			}
-			?>
-			
+			<?php }?>
 		</div>
 	</div>
-
 
 	<!-- 購入確認Modal -->
 	<div class="modal" id="cartBuyCheckModal">
@@ -136,11 +95,10 @@ $result = mysqli_query($conn, $sql);
 			</div>
 		</div>
 	</div>
-	
-	
+
 <script src="../btjs/jquery.min.js"></script>
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>
-<script src="../js/cart.js"></script>	
+<script src="../btjs/fleamarket.js"></script>
 </body>
 </html>

@@ -1,17 +1,11 @@
 <?php 
 session_start();
 require_once '../db/connection.php';
-/**
- * お問い合わせリスト (管理者：全てのリスト、一般ユーザー：自分のお問い合わせリストだけ)
- * @var string $sql
- */
-$sql = " SELECT * FROM inquiryinfo ";
-if(isset($_SESSION['userInfo']) && $_SESSION['userInfo']['user_authority'] != '9'){
-    $sql .= " WHERE user_no = {$_SESSION['userInfo']['user_no']} ";
-}
-$sql .= " ORDER BY inquiry_no DESC ";
-$result = connection($sql);
+require_once './inquiry.inc';
 
+$model = new InquiryModel();
+$model -> getForm();
+$model -> processing();
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,43 +46,27 @@ $result = connection($sql);
                 				<th style="width:30%">登録日</th>
                 				<th style="width:20%">返信</th>
                 			</tr>
-                			<?php 
-                			if(mysqli_num_rows($result) > 0){
-                			    while($data = mysqli_fetch_assoc($result)){
-                			?>
+                			<?php for($i = 0; $i < count($model->getInquiryList()); $i++){?>
                 			<tr>
-                				<td><?=$data['inquiry_no'] ?></td>
-                					<?php if(isset($_SESSION['userInfo']) && $_SESSION['userInfo']['user_authority'] != '9'){?>
-                					<td><a href="javascript:void(0)" onclick="inquiryModal('<?=$data['inquiry_no'] ?>')"><?=$data['inquiry_title'] ?></a></td>
-                					<?php } else {?>
-                					<td><a href="javascript:void(0)" onclick="inquiryReplyModal('<?=$data['inquiry_no'] ?>')"><?=$data['inquiry_title'] ?></a></td>
-                					<?php }?>
-                				<td><?=$data['inquiry_date'] ?></td>
-                				<td><?php $data['inquiry_replycheck'] == '0' ? print "<span class='text-danger'>未返信</span>" : print "<span class='text-primary'>返信完了</span>" ?></td>
+                				<td><?=$model->getInquiryList()[$i]['inquiry_no'] ?></td>
+                				<td><a href="javascript:void(0)" onclick="inquiryModal('<?=$model->getInquiryList()[$i]['inquiry_no'] ?>')"><?=$model->getInquiryList()[$i]['inquiry_title'] ?></a></td>
+                				<td><?=$model->getInquiryList()[$i]['inquiry_date'] ?></td>
+                				<td><?php $model->getInquiryList()[$i]['inquiry_replycheck'] == '0' ? print "<span class='text-danger'>未返信</span>" : print "<span class='text-primary'>返信完了</span>" ?></td>
                 			</tr>
-                			<?php         
-                			    }
-                    			mysqli_free_result($result);
-                			} else {
-                			?>
-                			<tr>
-                				<td colspan="4" style="text-align:center;">お問い合わせ内訳はありません。</td>
-                			</tr>
-                			<?php 
-                			}
-                			?>
+                			<?php }?>
                 		</table>
                     </div>
                     <?php if(isset($_SESSION['userInfo']) && $_SESSION['userInfo']['user_authority'] != '9'){ ?>
                     <div class="tab-pane fade" id="insertInquiryFormDiv" role="tabpanel" aria-labelledby="insertInquiryFormDiv-tab">
                     	<h3 style="text-align:center; margin-top:20px;">お問い合わせ</h3>
                 		<form class="form-group" id="insertInquiryForm" name="insertInquiryForm" method="post">
+                			<input type="hidden" id="inquiryCmd" name="inquiryCmd" value="insert">
                 			<input type="hidden" id="userNo" name="userNo" value="<?=$_SESSION['userInfo']['user_no'] ?>">
                 			<input type="hidden" id="userId" name="userId" value="<?=$_SESSION['userInfo']['user_id'] ?>">
                 			<input type="hidden" id="userPhoneNumber" name="userPhoneNumber" value="<?=$_SESSION['userInfo']['user_phone'] ?>">
                 			<input type="hidden" id="userEmail" name="userEmail" value="<?=$_SESSION['userInfo']['user_email'] ?>">
                 			<div class="md-form">
-                                <input  type="text" class="form-control" id="inquiryTitle" name="inquiryTitle" value="">
+                                <input  type="text" class="form-control" id="inquiryTitle" name="inquiryTitle">
                                 <label for="inquiryTitle">タイトルを入力してください。</label>
                             </div>
                             <div class="md-form">
@@ -97,7 +75,7 @@ $result = connection($sql);
                             </div>
 
                         	<div style="text-align:right">
-                        		<button type="button" class="btn btn-primary" onclick="insertInquiry(); return false;">お問い合わせする</button>
+                        		<button type="button" class="btn btn-primary" onclick="insertInquiry();">お問い合わせする</button>
                         		<button type="button" class="btn btn-danger" onclick="#">取消</button>
                     		</div>
                 		</form>
@@ -115,7 +93,7 @@ $result = connection($sql);
         <div class="modal-content">
             <div class="modal-header">
             	<!-- タイトル -->
-            	<input type="hidden" id="myModalReplyNo" name="myModalReplyNo">
+            	<input type="hidden" id="inquiryNo" name="inquiryNo">
                 <h4 class="modal-title w-100" id="myModalLabel"></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 	<span aria-hidden="true">&times;</span>
@@ -129,15 +107,20 @@ $result = connection($sql);
                 <div>
                 	<span class="text-success">返信：</span>
                 	<!-- 返信日 -->
-                	<span style="float:right;" id="myModalReplyDate"></span>
+                	<span style="float:right;" id="myModalReplyDate" ></span>
                 </div>
                 <!-- 返信内容 -->
-                <div id="myModalReplyContent"></div>
+                
+                <?php if(isset($_SESSION['userInfo']) && $_SESSION['userInfo']['user_authority'] == '9'){ ?>
+                	<div id="myModalReplyContentText"></div>
+                <?php } else {?>
+                	<div id="myModalReplyContent"></div>
+                <?php }?>
             </div>
             
             <div class="modal-footer">
             	<?php if(isset($_SESSION['userInfo']) && $_SESSION['userInfo']['user_authority'] == '9'){ ?>
-            	<button type="button" class="btn btn-success" id="replyButton" onclick="inquiryReplyContent();">返信する</button>
+            		<button type="button" class="btn btn-success" id="replyButton" onclick="inquiryReplyContent();">返信する</button>
             	<?php }?>
            		<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
             </div>
@@ -146,11 +129,10 @@ $result = connection($sql);
     </div>
 </div>
 
-
 <script src="../btjs/jquery.min.js"></script>
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>
 <script src="../btjs/mdb.min.js"></script>
-<script src="../js/inquiry.js"></script>
+<script src="../btjs/fleamarket.js"></script>
 </body>
 </html>

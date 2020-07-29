@@ -1,5 +1,6 @@
 <?php 
 session_start();
+
 if(isset($_SESSION['recentlyViewedGoods'])){
     $check = true;
     foreach($_SESSION['recentlyViewedGoods'] as $key => $value){
@@ -35,6 +36,8 @@ $detailGoodsData = array(
     'goodsNo' => mysqli_real_escape_string($conn, $_GET['goods_no']),
 );
 
+$sql = "SELECT * FROM goods_file WHERE goods_no = {$detailGoodsData['goodsNo']}";
+$fileResult = mysqli_query($conn, $sql);
 
 
 $sql = "
@@ -52,6 +55,8 @@ $sql = "
                     LEFT JOIN
 					    goods_file c
                     ON a.goods_no = c.goods_no
+                    GROUP BY
+                        a.goods_no
                  ) d
                 LEFT JOIN
                     like_hate_count e
@@ -69,7 +74,6 @@ if(mysqli_num_rows($result) > 0){
 }
 mysqli_free_result($result);
 mysqli_close($conn);
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -86,7 +90,6 @@ mysqli_close($conn);
 <body>
 
 	<?php require_once '../menu/menunav.php';?>
-
 	<div class="container" style="margin-top:50px">
 		<div><h2 class="font-weight-bold"><?=$data['goods_title'] ?></h2></div>   			
         <div>
@@ -109,11 +112,44 @@ mysqli_close($conn);
 	        				<?php }?>
         				</td>
         				<td rowspan="4" colspan="2">
-        					<?php if(!isset($data['goods_filerealname'])){?>
-        						<img src="../img/noImg.jpg" style="max-height: 150px; max-width: 150px">
+        					<?php 
+        					   if(mysqli_num_rows($fileResult) > 0){
+        					   ?>
+        					<div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+  								<div class="carousel-inner">
+    							
+								<?php
+								    $count = 0;
+								    while($fileData = mysqli_fetch_assoc($fileResult)){
+							        if($count == 0){
+						        ?>
+							        <div class="carousel-item active">
+                                   		<img class="d-block w-100" src="../upload/<?=$fileData['goods_filerealname']?>" >
+                                	</div>
+								<?php }?>
+                      	    		<div class="carousel-item">
+                                       <img class="d-block w-100" src="../upload/<?=$fileData['goods_filerealname']?>" >
+                                    </div>
+                              	<?php 
+                              	     $count++;
+								     }
+							     ?>
+  								</div>
+                                  <a class="carousel-control-prev" href="#carouselExampleFade" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                  </a>
+                                  <a class="carousel-control-next" href="#carouselExampleFade" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                  </a>
+                            </div>
+
         					<?php }else{?>
-        						<img src="../upload/<?=$data['goods_filerealname'] ?>" style="max-height: 150px; max-width: 150px">
+        						<img src="../upload/noImg.jpg" style="max-height: 150px; max-width: 150px">
         					<?php }?>
+    					   
+
         				</td>
         			</tr>
         			<tr>
@@ -134,9 +170,9 @@ mysqli_close($conn);
         			
         			<tr>
         				<td><button type="button" class="btn btn-outline-info" onclick="userLikeCountButton('<?=$data['user_no'] ?>')">いいね</button></td>
-        				<td><button type="button" class="btn btn-outline-danger"  onclick = "userHateCountButton('<?=$data['user_no'] ?>')" >悪い</button></td>
+        				<td><button type="button" class="btn btn-outline-danger"  onclick="userHateCountButton('<?=$data['user_no'] ?>')" >悪い</button></td>
         		 		<td><button type="button" class="btn btn-outline-primary" onclick="insertIntoCart('<?=$data['goods_no'] ?>')">カートに入れる</button></td>
-        				<td><button type="button" class="btn btn-outline-primary" onclick="buyInserCheck();">購入</button></td>
+        				<td><button type="button" class="btn btn-outline-primary" onclick="buyInsertCheck();">購入</button></td>
         				
         			</tr>
         			<tr>
@@ -144,14 +180,13 @@ mysqli_close($conn);
         			</tr>
         		</table><br>
     		</form>
-    		    		
+		
     		<div>
         		<!-- コメントリスト -->
     			<div><span>コメント</span></div>
 				<div id="goodsCommentList"></div>
 			
 				<form onsubmit="commentManager.insert(this); return false;">
-					<input type="hidden" id="goodsNo" name="goodsNo" value="<?=$data['goods_no'] ?>">
 					<input type="hidden" id="userNo" name="userNo" value="<?php isset($_SESSION['userInfo']['user_no']) ? print $_SESSION['userInfo']['user_no'] : print "" ?>">
     				<div>
     					<textarea class="form-control" id="goodsCommentContent" name="goodsCommentContent" rows="2"></textarea>	
@@ -176,7 +211,6 @@ mysqli_close($conn);
 		<div class="modal-dialog modal-sm">
 			<div class="modal-content">
 				<form id="goodsDeleteForm" name="goodsDeleteForm">
-    				<input type="hidden" id="goodsNo" name="goodsNo" value="<?=$data['goods_no'] ?>">
                     <!-- Modal Header -->
                     <div class="modal-header">
                         <h4 class="modal-title">商品削除</h4>
@@ -209,6 +243,7 @@ mysqli_close($conn);
 			<form id="goodsUpdateForm" name="goodsUpdateForm">
     			<div class="modal-content">
     				<input type="hidden" id="goodsNo" name="goodsNo" value="<?=$data['goods_no'] ?>">
+    				<input type="hidden" id="goodsCmd" name="goodsCmd" value="update">
                     <!-- Modal Header -->
                     <div class="modal-header">
                         <h4 class="modal-title">商品更新</h4>
@@ -239,12 +274,9 @@ mysqli_close($conn);
                             <textarea class="form-control" id="goodsContent" name="goodsContent" rows="5"><?=$data['goods_content'] ?></textarea>
                         </div>
                         <div class="input-group">
-                            <div class="input-group-prepend">
-                           		<span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
-                            </div>
                             <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="goodsFile" name="goodsFile" aria-describedby="inputGroupFileAddon01">
-                                <label class="custom-file-label" for="goodsFile">Choose file</label>
+                                <input type="file" class="custom-file-input" id="goodsFile" name="goodsFile[]" aria-describedby="inputGroupFileAddon01" multiple="multiple">
+                                <label class="custom-file-label" for="goodsFile">ファイルを選択してください。</label>
                             </div>
                             <button type="button" class="btn btn-primary" style="margin: 0 0 0 10px;">ファイル追加</button>
                         </div>
@@ -326,7 +358,7 @@ mysqli_close($conn);
             				</div>
             				<div class="div-right">
                         		<button type="submit" name="insertUser" class="btn btn-primary" onclick="nonUserBuy(<?=$data['goods_no'] ?>);">非会員購入</button>
-                        		<button type="button" class="btn btn-danger" data-dismiss="modal" id="nonUserBuyClose">取消</button>
+                        		<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
                     		</div>
     					</div>
                     </div>
@@ -338,9 +370,7 @@ mysqli_close($conn);
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>
 <script src="../btjs/mdb.min.js"></script>
-<script src="../js/goods.js"></script>
-<script src="../js/cart.js"></script>
-<script src="../js/user.js"></script>
+<script src="../btjs/fleamarket.js"></script>
 <script>
 $(document).ready(function(){
 	commentManager.list(<?=$data['goods_no'] ?>, <?php isset($_SESSION['userInfo']['user_no']) ? print $_SESSION['userInfo']['user_no'] : print ""?>);

@@ -7,7 +7,6 @@ if(!isset($_SESSION['userInfo'])){
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -50,11 +49,14 @@ if(!isset($_SESSION['userInfo'])){
 				<thead>
     				<tr>
     					<th style="width:10%; text-align:center;">画像</th>
-						<th style="width:25%; text-align:center;">出品者(ユーザーID)</th>
+						<th style="width:15%; text-align:center;">出品者(ユーザーID)</th>
 						<th style="width:25%; text-align:center;">出品名（出品地）</th>
 						<th style="width:15%; text-align:center;">価格</th>
 						<th style="width:15%; text-align:center;">売買日</th>
 						<th style="width:10%; text-align:center;">手数料</th>
+						<?php if($_SESSION['userInfo']['user_authority'] == 1){?>
+						<th style="width:10%; text-align:center;">売り上げ</th>
+						<?php }?>
     				</tr>
 				</thead>
 				<tbody id="salesListTable" style="text-align:center;"></tbody>
@@ -68,7 +70,6 @@ if(!isset($_SESSION['userInfo'])){
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<form id="detailUser" name="detailUser" method="post">
-					<input type="hidden" id="userNo" name="userNo" value="<?=$data['user_no'] ?>">
                     <!-- Modal Header -->
                     <div class="modal-header">
                         <h4 class="modal-title">詳細情報<span id="detailUserDeleteCheckModal"></span></h4>
@@ -123,7 +124,7 @@ if(!isset($_SESSION['userInfo'])){
 <script src="../btjs/jquery.min.js"></script>
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>
-<script src="../js/user.js"></script>
+<script src="../btjs/fleamarket.js"></script>
 <script>
 var year = "";
 var month = "";
@@ -148,46 +149,67 @@ $('#salesMonth').change(function(){
 		
 });
 
+/*売り上げリスト一覧 */
 function salesList(){
 	$('#salesListTable').html('');
 	$.ajax({
 		type : 'POST',
-		url : './salesListAjax.php',
+		url : './salesAjax.php',
 		data : {
 			year : year,
-			month : month
+			month : month,
+			userNo : <?=$_SESSION['userInfo']['user_no']?>
 		},
 		success : function(result){
+			console.log(result);
 			if(result == '8'){
-				alert('管理者だけアクセスできます。');
+				alert('ログインしてください。');
 				location.href='../index.php';
 				return;
 			}
 			var total = 0;
+			var userIncome = 0;
+			var dataInput = "";
+			
 			for(var i = 0; i < result['result'].length; i++){
 				var img = '<img src=\'../upload/'+result['result'][i].goods_filerealname+'\' style="max-height: 74px; max-width: 74px">'
 				if(result['result'][i].goods_filerealname == null){
-					img = '<img src="../img/noImg.jpg" style="max-height: 74px; max-width: 74px">'
+					img = '<img src="../upload/noImg.jpg" style="max-height: 74px; max-width: 74px">'
 				}
 				
 				total += Number(result['result'][i].goods_cprice);
-				$('#salesListTable').append(
-						'<tr>' +
-						'<td>'+img+'</td>' +
-						'<td><a href=\'javascript:void(0);\' onclick=\'userDetailModal('+result['result'][i].user_no+')\'>'+result['result'][i].user_id+'</a></td>' +
-						'<td>'+result['result'][i].goods_area+'</td>' +
-						'<td>'+result['result'][i].goods_price+'円</td>' +
-						'<td>'+result['result'][i].buy_createdate+'</td>' +
-						'<td>'+result['result'][i].goods_cprice+'円</td>' +
-						'</tr>'
-						);
+				userIncome += Number(result['result'][i].goods_price -result['result'][i].goods_cprice); 
+				dataInput = dataInput +
+            				'<tr>' +
+            				'<td><a href="../goods/goodsDetail.php?goods_no='+result['result'][i].goods_no+'">'+img+'</a></td>' +
+            				'<td><a href=\'javascript:void(0);\' onclick=\'userDetailModal('+result['result'][i].user_no+')\'>'+result['result'][i].user_id+'</a></td>' +
+            				'<td>'+result['result'][i].goods_area+'</td>' +
+            				'<td>'+result['result'][i].goods_price+'円</td>' +
+            				'<td>'+result['result'][i].buy_createdate+'</td>' +
+            				'<td>'+result['result'][i].goods_cprice+'円</td>'
+            				;
+				if(<?=$_SESSION['userInfo']['user_authority']?> == '1'){
+					dataInput = dataInput + '<td>'+(result['result'][i].goods_price - result['result'][i].goods_cprice)+'</td>';
+				}
+				dataInput = dataInput + '</tr>';
 			}
-			$('#salesListTable').append(
-					'<tr>' +
-					'<td colspan="5">合計</td>' +
-					'<td>'+total+'円</td>' +
-					'</tr>'
-					);
+
+			if(<?=$_SESSION['userInfo']['user_authority']?> == '1'){
+				dataInput = dataInput +
+                			'<tr>' +
+                			'<td colspan="6">合計</td>' +
+                			'<td>'+userIncome+'円</td>' +
+                			'</tr>';
+			}else{
+    			dataInput = dataInput +
+                			'<tr>' +
+                			'<td colspan="5">合計</td>' +
+                			'<td>'+total+'円</td>' +
+                			'</tr>';
+			}
+			$('#salesListTable').html(dataInput);
+        			
+			
 		}
 	});
 }

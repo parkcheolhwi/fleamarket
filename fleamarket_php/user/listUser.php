@@ -1,57 +1,9 @@
 <?php 
 session_start();
-
-$conn = mysqli_connect(
-    'localhost',
-    'root',
-    '123456',
-    'fleamarket'
-    );
-
-/**
- * DB接続チェックする
- */
-if(mysqli_connect_errno()){
-    $errorMsg = "DB接続に失敗しました。";
-    $path = "index";
-    header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
-    exit;
-}
-
-$sql = "
-        SELECT
-            a.*, count(b.user_likecount) AS user_likecount, count(b.user_hatecount) AS user_hatecount
-            FROM
-                (
-                SELECT  
-                    userinfo.*, 
-                    COUNT(goods.goods_no) AS goodsCount 
-                        FROM 
-                            userinfo 
-                            LEFT JOIN 
-                                goods 
-                                ON 
-                                userinfo.user_no = goods.user_no 
-                                GROUP BY userinfo.user_no
-                ) a
-			LEFT JOIN
-				like_hate_count b
-                ON 
-                    a.user_no = b.user_no
-            WHERE
-                user_authority = '1'
-			GROUP BY
-				a.user_no
-            ORDER BY
-                user_no;
-            
-        ";
-/**
- * SQLを実行しデータを取得する
- * @var unknown $result
- */
-$result = mysqli_query($conn, $sql);
-
+require_once '../db/connection.php';
+require_once './user.inc';
+$model = new UserModel();
+$model -> userList();
 ?>
 <!DOCTYPE html>
 <html>
@@ -85,24 +37,16 @@ $result = mysqli_query($conn, $sql);
         </thead>
 		
 		<tbody>
-            <?php 
-                 if(mysqli_num_rows($result) > 0){
-                    while($data = mysqli_fetch_assoc($result)){
-            ?>
+            <?php for($i = 0; $i < count($model->getUserList()); $i++){ ?>
             <tr>
-            	<td style="text-align:center"><a href="javascript:void(0);" onclick="userDetailModal('<?=$data['user_no'] ?>')" ><span class="text-primary"><?=$data['user_id']?></span></a></td>
-                <td style="text-align:center"><?=$data['user_likecount'] ?></td>
-                <td style="text-align:center"><?=$data['user_hatecount'] ?></td>
-                <td style="text-align:center" class="text-primary"><a href="javascript:void(0);" onclick="userGoodsCountCheck('<?=$data['user_no'] ?>')"><span class="text-primary"><?=$data['goodsCount'] ?></span></a></td>
-                <td style="text-align:center"><?=$data['user_createdate']?></td>
-                <td style="text-align:center"><?php $data['user_deletecheck'] == '0' ? print "会員" : print "非会員"?></td>
+            	<td style="text-align:center"><a href="javascript:void(0);" onclick="userDetailModal('<?=$model->getUserList()[$i]['user_no'] ?>')" ><span class="text-primary"><?=$model->getUserList()[$i]['user_id']?></span></a></td>
+                <td style="text-align:center"><?=$model->getUserList()[$i]['user_likecount'] ?></td>
+                <td style="text-align:center"><?=$model->getUserList()[$i]['user_hatecount'] ?></td>
+                <td style="text-align:center" class="text-primary"><a href="javascript:void(0);" onclick="userGoodsCountCheck('<?=$model->getUserList()[$i]['user_no'] ?>')"><span class="text-primary"><?=$model->getUserList()[$i]['goodsCount'] ?></span></a></td>
+                <td style="text-align:center"><?=$model->getUserList()[$i]['user_createdate']?></td>
+                <td style="text-align:center"><?php $model->getUserList()[$i]['user_deletecheck'] == '0' ? print "会員" : print "非会員"?></td>
             </tr>
-            <?php 
-                    }
-                }
-                mysqli_free_result($result);
-                mysqli_close($conn);
-            ?>
+            <?php }?>
         </tbody>
 	</table>
 </div>
@@ -114,7 +58,6 @@ $result = mysqli_query($conn, $sql);
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<form id="detailUser" name="detailUser" method="post">
-					<input type="hidden" id="userNo" name="userNo" value="<?=$data['user_no'] ?>">
                     <!-- Modal Header -->
                     <div class="modal-header">
                         <h4 class="modal-title">詳細情報<span id="detailUserDeleteCheckModal"></span></h4>
@@ -189,7 +132,7 @@ $result = mysqli_query($conn, $sql);
 <script src="../btjs/jquery.min.js"></script>
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>
-<script src="../js/user.js"></script>
+<script src="../btjs/fleamarket.js"></script>
 <script src="../btjs/mdb.min.js"></script>
 <script type="text/javascript" src="../btjs/addons/datatables2.min.js"></script>
 <script>

@@ -1,7 +1,4 @@
-<?php
-
-
-?>
+<?php session_start();?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,10 +13,7 @@
 <link rel="stylesheet" href="../css/user.css">
 </head>
 <body>
-
 	<?php require_once '../menu/menunav.php';?>
-	
-
 	<div class="row">
     	<div class="col-lg-4"></div>	
     		
@@ -42,7 +36,6 @@
     	<div class="col-lg-5"></div>
 	</div>
 
-
 	<!-- 購入リストのModal -->
 	<div class="modal" id="nonUserBuyModal">
 		<div class="modal-dialog modal-lg">
@@ -63,12 +56,10 @@
 			</div>
 		</div>
 	</div>
-	
-	
 <script src="../btjs/jquery.min.js"></script>
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>
 <script src="../btjs/mdb.min.js"></script>
-<script src="../js/user.js"></script>	
+<script src="../btjs/fleamarket.js"></script>
 </body>
 </html>

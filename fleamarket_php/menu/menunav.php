@@ -51,6 +51,7 @@
     				<li class="nav-item"><a class="nav-link" href="http://localhost:8712/fleamarket_parkcheolhwi/goods/goodsList.php">商品</a></li>
     				<li class="nav-item"><a class="nav-link" href="http://localhost:8712/fleamarket_parkcheolhwi/cart/cartList.php">カート</a></li>
     				<li class="nav-item"><a class="nav-link" href="http://localhost:8712/fleamarket_parkcheolhwi/buy/buyList.php">購入リスト</a></li>
+    				<li class="nav-item"><a class="nav-link" href="http://localhost:8712/fleamarket_parkcheolhwi/sales/salesList.php">売り上げ</a></li>
     				<li class="nav-item"><a class="nav-link" href="http://localhost:8712/fleamarket_parkcheolhwi/inquiry/inquiry.php">お問い合わせ</a></li>
     				<li class="nav-item"><a class="nav-link" href="http://localhost:8712/fleamarket_parkcheolhwi/chat/chatDetail.php">メッセージ</a></li>
     			</ul>

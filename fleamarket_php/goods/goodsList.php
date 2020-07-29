@@ -57,6 +57,7 @@ li {
 			<form id="goodsInsertForm" name="goodsInsertForm">
     			<div class="modal-content">
     				<input type="hidden" id="userNo" name="userNo" value="<?=$_SESSION['userInfo']['user_no'] ?>">
+    				<input type="hidden" id="goodsCmd" name="goodsCmd" value="insert">
                     <!-- Modal Header -->
                     <div class="modal-header">
                         <h4 class="modal-title">商品登録</h4>
@@ -88,10 +89,9 @@ li {
                         </div>
                         <div class="input-group">
                             <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="goodsFile" name="goodsFile" aria-describedby="inputGroupFileAddon01">
+                                <input type="file" class="custom-file-input" id="goodsFile" name="goodsFile[]" aria-describedby="inputGroupFileAddon01" multiple="multiple">
                                 <label class="custom-file-label" for="goodsFile">ファイルを選択してください。</label>
                             </div>
-                            <button type="button" class="btn btn-primary" style="margin: 0 0 0 10px;" onclick="addInput()">ファイル追加</button>
                         </div>
                         <div id="fileInputMenu">
                             <div class="input-group"></div>
@@ -113,22 +113,12 @@ li {
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>
 <script src="../btjs/mdb.min.js"></script>
-<script src="../js/goods.js"></script>
-<script src="../js/cart.js"></script>
+<script src="../btjs/fleamarket.js"></script>
 <script>
 $(document).ready(function(){
 	goodsAllList();
 });
 
-/* var i = 0;
-function addInput(){
-	i++;
-	var inputtag =  '<div class="custom-file">' +
-    				'<input type="file" class="custom-file-input" id="goodsFile" name="goodsFile'+ i +'" aria-describedby="inputGroupFileAddon01">' +
-    				'<label class="custom-file-label" for="goodsFile">ファイルを選択してください。</label>' +
-					'</div>';
-	$("#fileInputMenu").append(inputtag);
-} */
 </script>
 </body>
 </html>

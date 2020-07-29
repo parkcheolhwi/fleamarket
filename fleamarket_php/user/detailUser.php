@@ -1,55 +1,10 @@
 <?php 
 session_start();
-
-$conn = mysqli_connect(
-    'localhost',
-    'root',
-    '123456',
-    'fleamarket'
-    );
-
-
-/**
- * DB接続チェックする
- */
-if(mysqli_connect_errno()){
-    $errorMsg = "DB接続に失敗しました。";
-    $path = "index";
-    header("Location: ../error.php?errorMsg={$errorMsg}&path={$path}");
-    exit;
-}
-
-/**
- * SQL文(ユーザーに該当するデータを取得する)
- * @var Ambiguous $sql
- */
-$sql = "
-       SELECT
-            userinfo.*, 
-            COUNT(goods.goods_no) AS goodsCount 
-            FROM 
-                userinfo 
-                LEFT JOIN 
-                    goods 
-                ON
-                     userinfo.user_no = goods.user_no 
-                WHERE 
-                     userinfo.user_no = {$_SESSION['userInfo']['user_no']}
-                GROUP BY userinfo.user_no ;
-        ";
-
-/**
- * SQLを実行しデータを取得する
- * @var unknown $result
- */
-$result = mysqli_query($conn, $sql);
-if (mysqli_num_rows($result) > 0) {
-   $data = mysqli_fetch_assoc($result); 
-   mysqli_free_result($result);
-   mysqli_close($conn);
-}
+require_once "../db/connection.php";
+require_once "./user.inc";
+$model = new UserModel();
+$model -> getDetailUser();
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -78,37 +33,35 @@ if (mysqli_num_rows($result) > 0) {
 	
         	<div class="col-lg-9">
         		<div style="margin-top:100px; text-align:right;">
-        			<span>登録日：<?=$data['user_createdate'] ?></span>
+        			<span>登録日：<?=$model->getUserCreateDate() ?></span>
         		</div>
         		<table class="table">
         			<thead>
             			<tr>
             				<td>ID：</td>
-            				<td><?=$data['user_id'] ?></td>
+            				<td><?=$model->getUserId() ?></td>
             				<td>PASSWORD：</td>
             				<td><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#passwordUpdate" style="margin:0">パスワード変更</button></td>
             			</tr>
             			<tr>
             				<td>名前：</td>
-            				<td><?=$data['user_name'] ?></td>
+            				<td><?=$model->getUserName() ?></td>
             				<td>生年月日：</td>
-            				<td><?=$data['user_birth'] ?></td>
+            				<td><?=$model->getUserBirth() ?></td>
             			</tr>
             			<tr>
             				<td>電話番号：</td>
-            				<td><?=$data['user_phone'] ?></td>
+            				<td><?=$model->getUserPhoneNumber() ?></td>
             				<td>E-メール：</td>
-            				<td><?=$data['user_email'] ?></td>
+            				<td><?=$model->getUserEmail() ?></td>
             			</tr>
             			<tr>
             				<td>住所</td>
-            				<td colspan="3"><?="(".$data['user_zipcode'].")".$data['user_address1']." ".$data['user_address2'] ?></td>
+            				<td colspan="3"><?="(".$model->getUserZipcode().")".$model->getUserAddress1()." ".$model->getUserAddress2() ?></td>
             			</tr>
             			<tr>
-            				<td>お問い合わせ数：</td>
-            				<td><a href="#">1</a></td>
             				<td>出品数：</td>
-            				<td><a href="javascript:void(0);" onclick="userGoodsCountCheck('<?=$data['user_no'] ?>')"><?=$data['goodsCount']?></a></td>
+            				<td><a href="javascript:void(0);" onclick="userGoodsCountCheck('<?=$model->getUserNo() ?>')"><?=$model->getGoodsCount()?></a></td>
             			</tr>
         			</thead>
         		</table>	
@@ -129,7 +82,7 @@ if (mysqli_num_rows($result) > 0) {
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<form id="detailUserUpdate" name="detailUserUpdate" method="post">
-					<input type="hidden" id="userNo" name="userNo" value="<?=$data['user_no'] ?>">
+					<input type="hidden" id="userNo" name="userNo" value="<?=$model->getUserNo() ?>">
                     <!-- Modal Header -->
                     <div class="modal-header">
                         <h4 class="modal-title">詳細情報変更</h4>
@@ -141,40 +94,40 @@ if (mysqli_num_rows($result) > 0) {
                     	<table class="table form-group">
                         	<tr>
                         		<td>ID：</td>
-                        		<td><?=$data['user_id'] ?></td>
+                        		<td><?=$model->getUserId() ?></td>
                         		<td>パスワード：</td>
-                        		<td><button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" data-toggle="modal" data-target="#passwordUpdate" >パスワード変更</button></td>
+                        		<td><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#passwordUpdate" >パスワード変更</button></td>
                     		</tr>
                     		<tr>
                     			<td>名前：</td>
-                    			<td><?=$data['user_name'] ?></td>
+                    			<td><?=$model->getUserName()?></td>
                     			<td>生年月日：</td>
-                    			<td><?=$data['user_birth'] ?></td>
+                    			<td><?=$model->getUserBirth() ?></td>
                     		</tr>
                     		<tr>
                     			<td>電話番号：</td>
-                    			<td colspan="3"><input type="text" class="form-control" id="userPhoneNumber" name="userPhoneNumber" value="<?=$data['user_phone'] ?>" placeholder="電話番号を入力してください。"></td>
+                    			<td colspan="3"><input type="text" class="form-control" id="userPhoneNumber" name="userPhoneNumber" value="<?=$model->getUserPhoneNumber() ?>" placeholder="電話番号を入力してください。"></td>
                     		</tr>
                     		<tr>
                     			<td>E-メール：</td>
                     			<td colspan="3">
-                    				<input type="text" class="form-control" id="userEmail" name="userEmail" value="<?=$data['user_email'] ?>" placeholder="E-メールを入力してください。">
+                    				<input type="text" class="form-control" id="userEmail" name="userEmail" value="<?=$model->getUserEmail() ?>" placeholder="E-メールを入力してください。">
                     			</td>
                     		</tr>
                     		<tr>	
                 				<td>住所：</td>
                 				<td class="form-inline">
-                					<input class="form-control" type="text" id="userZipCode" name="userZipCode" value="<?=$data['user_zipcode'] ?>" placeholder="郵便番号">&nbsp;
+                					<input class="form-control" type="text" id="userZipCode" name="userZipCode" value="<?=$model->getUserZipcode() ?>" placeholder="郵便番号">&nbsp;
                 					<button type="button" class="btn btn-default" onclick="searchZipCode();">検索</button>
                 				</td>
             				</tr>
             				<tr>
                 				<td></td>
-                				<td colspan="3"><input class="form-control" type="text" id="userAddress1" name="userAddress1" value="<?=$data['user_address1'] ?>" placeholder="都道府県"></td>
+                				<td colspan="3"><input class="form-control" type="text" id="userAddress1" name="userAddress1" value="<?=$model->getUserAddress1() ?>" placeholder="都道府県"></td>
                 			</tr>
                 			<tr>
                 				<td></td>
-                				<td colspan="3"><input class="form-control" type="text" id="userAddress2" name="userAddress2" value="<?=$data['user_address2'] ?>" placeholder="詳細住所を入力してください。（選択）"></td>
+                				<td colspan="3"><input class="form-control" type="text" id="userAddress2" name="userAddress2" value="<?=$model->getUserAddress2() ?>" placeholder="詳細住所を入力してください。（選択）"></td>
                 			</tr>
                 			
                     	</table>
@@ -196,8 +149,9 @@ if (mysqli_num_rows($result) > 0) {
 	<div class="modal" id="passwordUpdate">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form action="./passwordUpdate.php" method="post" onsubmit="return updatePasswordCheck()">
-					<input type="hidden" id="userNo" name="userNo" value="<?=$data['user_no'] ?>">
+				<form id="passwordUpdateForm" name="passwordUpdateForm">
+					<input type="hidden" id="userCmd" name="userCmd" value="updatePassword">
+					<input type="hidden" id="userNo" name="userNo" value="<?=$model->getUserNo() ?>">
                     <!-- Modal Header -->
                     <div class="modal-header">
                         <h4 class="modal-title">パスワード変更</h4>
@@ -220,7 +174,7 @@ if (mysqli_num_rows($result) > 0) {
         
                     <!-- Modal footer -->
                     <div class="modal-footer">
-                    	<button type="submit" class="btn btn-primary">変更</button>
+                    	<button type="button" class="btn btn-primary" onclick="updatePasswordCheck();">変更</button>
                    		<button type="button" class="btn btn-danger ModalClose" data-dismiss="modal">取消</button>
                     </div>
 				</form>	
@@ -250,7 +204,7 @@ if (mysqli_num_rows($result) > 0) {
         
                     <!-- Modal footer -->
                     <div class="modal-footer">
-                    	<button type="button" class="btn btn-primary" onclick="deleteUserFunction(<?=$data['user_no'] ?>);">脱退</button>
+                    	<button type="button" class="btn btn-primary" onclick="deleteUserFunction(<?=$model->getUserNo() ?>);">脱退</button>
                    		<button type="button" class="btn btn-danger passwordUpdateModalClose" data-dismiss="modal">取消</button>
                     </div>
 				
@@ -278,11 +232,11 @@ if (mysqli_num_rows($result) > 0) {
 			</div>
 		</div>
 	</div>
+	
 <script src="../btjs/jquery.min.js"></script>
 <script src="../btjs/popper.min.js"></script>
 <script src="../btjs/bootstrap.min.js"></script>
 <script src="../btjs/mdb.min.js"></script>
-<script src="../js/user.js"></script>
-    ​
+<script src="../btjs/fleamarket.js"></script>​
 </body>
 </html>
