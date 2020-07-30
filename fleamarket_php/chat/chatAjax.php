@@ -19,13 +19,20 @@ switch($model->getChatCmd()){
     case 'contentInsert':
         contentInsert();
         break;
+    case 'contentDelete':
+        contentDelete();
+        break;
+}
+
+function contentDelete(){
+    global  $model;
+    $sql = " UPDATE chat SET deleteCheck = 1 WHERE chatID = {$model->getChatId()} ";
+    connection($sql);
 }
 
 function contentInsert(){
     global $model;
-    $sql = "
-        SELECT * FROM chat
-        ";
+    $sql = " SELECT * FROM chat ";
     $result = connection($sql);
     $chat_room=0;
     $numdata = array();

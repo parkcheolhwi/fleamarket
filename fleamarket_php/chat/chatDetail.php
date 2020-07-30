@@ -25,8 +25,12 @@ function chatList(userId){
 		}
 	}); 
 }
+function chatRoomOut(){
+	alert('まだやってない');
+}
 function chatBox(toID){
 	var fromID = '<?= $_SESSION['userInfo']['user_id']?>';
+	
 	$.ajax({
 		type : 'POST',
 		url : './chatAjax.php',
@@ -42,7 +46,7 @@ function chatBox(toID){
 					userId = result['result'][i].toID;
 				}
 				chatList = chatList + '<div id=\''+userId+'\'>' + 
-                            				'<div style="float:right"><button type="button" class="btn btn-outline-danger btn-sm">出る</button></div>' +
+                            				'<div style="float:right"><button type="button" class="btn btn-outline-danger btn-sm" onclick="chatRoomOut()">出る</button></div>' +
                             				'<a href="javascript:void(0);" onclick="chatList(\''+userId+'\')">'+
                             				'<div class="chat_list">' +
                             					'<div class="chat_people">' +
@@ -91,8 +95,9 @@ function chatBox(toID){
 				if(result['result'].fromID == fromID){
 					$('.msg_history').append(
 							'<div class="outgoing_msg"></div>' +
-							'<div class="sent_msg" style="width:51%;">' +
+							'<div class="sent_msg" style="width:51%;" id="content'+result['result'].chatID+'">' +
 							'<p>'+result['result'].chatContent+'</p>' +
+							'<span style="float:right"><a href="javascript:void(0)" onclick="messageDelete('+result['result'].chatID+')">削除</a></span>'+
 							'<span class="time_date">'+result['result'].chatTime+'</span>' +
 							'</div>' +
 							'</div>'
@@ -139,24 +144,38 @@ function chatBox(toID){
 				chatCmd : 'list'
 			},
 			success : function(result){
-				
 				if(result['result'][0].fromID == fromID){
 					$('.msg_history').append('<input type="hidden" name="user_id" id="user_id" value=\''+result['result'][0].toID+'\'>');
 				}else{
 					$('.msg_history').append('<input type="hidden" name="user_id" id="user_id" value=\''+result['result'][0].fromID+'\'>');
 				}
+
+				
 				
 				for(var i = 1; i < result['result'].length; i++){
+					var Imessage = '<p>'+result['result'][i].chatContent+'</p>' +
+                					'<span style="float:right"><a href="javascript:void(0)" onclick="messageDelete('+result['result'][i].chatID+')">削除</a></span>'+	
+                					'<span class="time_date">'+result['result'][i].chatTime+'</span>' +
+                					'</div>';
+                	var Ymessage = '<div class="received_withd_msg" style="width: 100%;">'+
+                					'<p>'+result['result'][i].chatContent+'</p>'+
+                					'<span class="time_date">'+result['result'][i].chatTime+'</span>'+
+                					'</div>' ;
+					if(result['result'][i].deleteCheck == 1) {
+						Imessage = '<p style="background:#00FFFF; color:black; margin-bottom:5px" >メッセージが削除されました。</p>';
+						Ymessage = '<p style="background:#00FFFF; color:black; margin-bottom:5px" >メッセージが削除されました。</p>';
+					}
+						
 					if(result['result'][i].fromID == fromID){
+						
 						$('.msg_history').append(
-								'<div class="outgoing_msg"></div>' +	
-								'<div class="sent_msg" style="width:51%;">' +
-								'<p>'+result['result'][i].chatContent+'</p>' +
-								'<span class="time_date">'+result['result'][i].chatTime+'</span>' +
-								'</div>' +
+								'<div class="outgoing_msg"></div>' +
+								'<div class="sent_msg" style="width:51%;" id="content'+result['result'][i].chatID+'">' +
+								Imessage +
 								'</div>'
 								);
-					} 	else{
+					} else{
+						
 						$('.msg_history').append(
 								'<div class="incoming_msg" style="float:left; width:51%">' +
 								'<div class="incoming_msg_img" >'+
@@ -164,10 +183,7 @@ function chatBox(toID){
 								'</div>'+								
 								'<div class="received_msg" >'+
 								'<p style="margin-bottom:0px;">'+result['result'][i].fromID+'</p>' +
-								'<div class="received_withd_msg" style="width: 100%;">'+
-								'<p>'+result['result'][i].chatContent+'</p>'+
-								'<span class="time_date">'+result['result'][i].chatTime+'</span>'+
-								'</div>' +
+								Ymessage +
 								'</div>' +
 								'</div>'
 								);
@@ -180,6 +196,20 @@ function chatBox(toID){
 			}
 		
 		}); 
+}
+
+function messageDelete(chatNo){
+	$.ajax({
+		type : 'POST',
+		url : './chatAjax.php',
+		data : {
+			chatId : chatNo,
+			chatCmd : 'contentDelete'
+		},
+		success : function(result){
+			$('#content'+chatNo).html('<p style="background:#00FFFF; color:black; margin-bottom:5px" >メッセージが削除されました。</p>');
+		}
+	});
 }
 
 
@@ -202,14 +232,6 @@ function chatBox(toID){
 					<div class="headind_srch">
 						<div class="recent_heading">
 							<h4>最近内訳</h4>
-						</div>
-						<div class="srch_bar">
-							<div class="stylish-input-group">
-								<input type="text" class="search-bar" placeholder="Search"> 
-								<span class="input-group-addon">
-									<button type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
-								</span>
-							</div>
 						</div>
 					</div>
 					<div class="inbox_chat"></div>
